@@ -1,4 +1,4 @@
-## Guide de Préparation à la Certification COBIT 5 - Version Fondamentale Détaillée
+# Guide de Préparation à la Certification COBIT 5 - Version Fondamentale Détaillée
 
 ---
 
