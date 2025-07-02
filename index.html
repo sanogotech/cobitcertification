@@ -531,111 +531,617 @@
             </div>
         </section>
 
-        <section id="quiz" class="my-5">
-            <h2 class="section-title">Testez vos connaissances : Mini-Quiz COBIT 5</h2>
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <form id="quizForm">
-                        <div class="mb-4">
-                            <p><strong>1. Quel est le rôle principal du principe "Séparer la Gouvernance de la Gestion" dans COBIT 5 ?</strong></p>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="q1" id="q1a" value="a">
-                                <label class="form-check-label" for="q1a">
-                                    A. Assurer que l'IT est entièrement intégrée dans les opérations quotidiennes de l'entreprise.
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="q1" id="q1b" value="b">
-                                <label class="form-check-label" for="q1b">
-                                    B. Distinguer clairement les responsabilités stratégiques (gouvernance) des responsabilités opérationnelles (gestion).
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="q1" id="q1c" value="c">
-                                <label class="form-check-label" for="q1c">
-                                    C. Harmoniser COBIT 5 avec d'autres cadres comme ITIL et ISO 27001.
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="q1" id="q1d" value="d">
-                                <label class="form-check-label" for="q1d">
-                                    D. Se concentrer sur la création de valeur pour toutes les parties prenantes.
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <p><strong>2. Lequel des éléments suivants est un facilitateur (Enabler) dans COBIT 5 ?</strong></p>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="q2" id="q2a" value="a">
-                                <label class="form-check-label" for="q2a">
-                                    A. La planification stratégique
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="q2" id="q2b" value="b">
-                                <label class="form-check-label" for="q2b">
-                                    B. Les Processus
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="q2" id="q2c" value="c">
-                                <label class="form-check-label" for="q2c">
-                                    C. L'optimisation des risques
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="q2" id="q2d" value="d">
-                                <label class="form-check-label" for="q2d">
-                                    D. La livraison des bénéfices
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <p><strong>3. Dans quel domaine de processus COBIT 5 se trouve la gestion des incidents ?</strong></p>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="q3" id="q3a" value="a">
-                                <label class="form-check-label" for="q3a">
-                                    A. EDM (Évaluer, Diriger et Surveiller)
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="q3" id="q3b" value="b">
-                                <label class="form-check-label" for="q3b">
-                                    B. APO (Aligner, Planifier et Organiser)
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="q3" id="q3c" value="c">
-                                <label class="form-check-label" for="q3c">
-                                    C. BAI (Construire, Acquérir et Implémenter)
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="q3" id="q3d" value="d">
-                                <label class="form-check-label" for="q3d">
-                                    D. DSS (Livrer, Servir et Soutenir)
-                                </label>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">Soumettre le Quiz</button>
-                    </form>
-                    <div id="quizResult" class="mt-4 p-3 border rounded" style="display: none;"></div>
-                    <div class="mt-4">
-                        <h6>Comment utiliser ce quiz pour une étude efficace :</h6>
-                        <ul>
-                            <li><strong>Simulez les conditions d'examen :</strong> Essayez de compléter le quiz sans aide extérieure et dans un laps de temps défini.</li>
-                            <li><strong>Révisez toutes les réponses :</strong> Même pour les questions auxquelles vous avez répondu correctement, révisez les explications pour renforcer votre compréhension.</li>
-                            <li><strong>Identifiez les points faibles :</strong> Portez une attention particulière aux sujets où vous vous trompez fréquemment. Cela indique des domaines qui nécessitent une étude plus approfondie.</li>
-                            <li><strong>Ne vous contentez pas de mémoriser :</strong> Comprenez le "pourquoi" derrière les bonnes réponses, plutôt que de simplement les mémoriser. Cela vous aidera à répondre aux questions basées sur des scénarios.</li>
-                            <li><strong>Suivez les progrès :</strong> Faites plusieurs quiz au fil du temps pour suivre votre amélioration.</li>
-                        </ul>
+     <section id="quiz" class="my-5">
+    <h2 class="section-title">Testez vos connaissances : Mini-Quiz COBIT 5</h2>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form id="quizForm">
+                <div class="mb-4">
+                    <p><strong>1. Quel est le rôle principal du principe "Séparer la Gouvernance de la Gestion" dans COBIT 5 ?</strong></p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q1" id="q1a" value="a">
+                        <label class="form-check-label" for="q1a">
+                            A. Assurer que l'IT est entièrement intégrée dans les opérations quotidiennes de l'entreprise.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q1" id="q1b" value="b">
+                        <label class="form-check-label" for="q1b">
+                            B. Distinguer clairement les responsabilités stratégiques (gouvernance) des responsabilités opérationnelles (gestion).
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q1" id="q1c" value="c">
+                        <label class="form-check-label" for="q1c">
+                            C. Harmoniser COBIT 5 avec d'autres cadres comme ITIL et ISO 27001.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q1" id="q1d" value="d">
+                        <label class="form-check-label" for="q1d">
+                            D. Se concentrer sur la création de valeur pour toutes les parties prenantes.
+                        </label>
                     </div>
                 </div>
+
+                <div class="mb-4">
+                    <p><strong>2. Lequel des éléments suivants est un facilitateur (Enabler) dans COBIT 5 ?</strong></p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q2" id="q2a" value="a">
+                        <label class="form-check-label" for="q2a">
+                            A. La planification stratégique
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q2" id="q2b" value="b">
+                        <label class="form-check-label" for="q2b">
+                            B. Les Processus
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q2" id="q2c" value="c">
+                        <label class="form-check-label" for="q2c">
+                            C. L'optimisation des risques
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q2" id="q2d" value="d">
+                        <label class="form-check-label" for="q2d">
+                            D. La livraison des bénéfices
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p><strong>3. Dans quel domaine de processus COBIT 5 se trouve la gestion des incidents ?</strong></p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q3" id="q3a" value="a">
+                        <label class="form-check-label" for="q3a">
+                            A. EDM (Évaluer, Diriger et Surveiller)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q3" id="q3b" value="b">
+                        <label class="form-check-label" for="q3b">
+                            B. APO (Aligner, Planifier et Organiser)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q3" id="q3c" value="c">
+                        <label class="form-check-label" for="q3c">
+                            C. BAI (Construire, Acquérir et Implémenter)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q3" id="q3d" value="d">
+                        <label class="form-check-label" for="q3d">
+                            D. DSS (Livrer, Servir et Soutenir)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p><strong>4. Quel principe de COBIT 5 met l'accent sur la "Cascade des Objectifs" ?</strong></p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q4" id="q4a" value="a">
+                        <label class="form-check-label" for="q4a">
+                            A. Couvrir l'Entreprise de bout en bout
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q4" id="q4b" value="b">
+                        <label class="form-check-label" for="q4b">
+                            B. Appliquer un cadre intégré unique
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q4" id="q4c" value="c">
+                        <label class="form-check-label" for="q4c">
+                            C. Répondre aux besoins des parties prenantes
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q4" id="q4d" value="d">
+                        <label class="form-check-label" for="q4d">
+                            D. Séparer la Gouvernance de la Gestion
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p><strong>5. Le facilitateur "Structures Organisationnelles" inclut la définition des rôles et responsabilités, souvent visualisée par :</strong></p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q5" id="q5a" value="a">
+                        <label class="form-check-label" for="q5a">
+                            A. Les indicateurs clés de performance (KPI)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q5" id="q5b" value="b">
+                        <label class="form-check-label" for="q5b">
+                            B. Les diagrammes RACI
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q5" id="q5c" value="c">
+                        <label class="form-check-label" for="q5c">
+                            C. Les rapports d'audit
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q5" id="q5d" value="d">
+                        <label class="form-check-label" for="q5d">
+                            D. Les accords de niveau de service (SLA)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p><strong>6. Lequel des domaines de processus COBIT 5 est spécifiquement lié aux activités de "gouvernance" ?</strong></p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q6" id="q6a" value="a">
+                        <label class="form-check-label" for="q6a">
+                            A. APO (Aligner, Planifier et Organiser)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q6" id="q6b" value="b">
+                        <label class="form-check-label" for="q6b">
+                            B. EDM (Évaluer, Diriger et Surveiller)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q6" id="q6c" value="c">
+                        <label class="form-check-label" for="q6c">
+                            C. DSS (Livrer, Servir et Soutenir)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q6" id="q6d" value="d">
+                        <label class="form-check-label" for="q6d">
+                            D. MEA (Surveiller, Évaluer et Examiner)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p><strong>7. Le facilitateur "Culture, Éthique et Comportement" est essentiel car :</strong></p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q7" id="q7a" value="a">
+                        <label class="form-check-label" for="q7a">
+                            A. Il définit les processus techniques de l'entreprise.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q7" id="q7b" value="b">
+                        <label class="form-check-label" for="q7b">
+                            B. Il influence la réussite ou l'échec des initiatives de gouvernance des TI.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q7" id="q7c" value="c">
+                        <label class="form-check-label" for="q7c">
+                            C. Il est responsable de la gestion des infrastructures TI.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q7" id="q7d" value="d">
+                        <label class="form-check-label" for="q7d">
+                            D. Il assure la conformité réglementaire externe.
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p><strong>8. Le processus APO02 de COBIT 5 est responsable de la gestion de la stratégie. Quel est son objectif principal ?</strong></p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q8" id="q8a" value="a">
+                        <label class="form-check-label" for="q8a">
+                            A. Gérer les changements apportés aux systèmes TI.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q8" id="q8b" value="b">
+                        <label class="form-check-label" for="q8b">
+                            B. Définir et communiquer la stratégie et la feuille de route des TI.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q8" id="q8c" value="c">
+                        <label class="form-check-label" for="q8c">
+                            C. Résoudre les incidents TI.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q8" id="q8d" value="d">
+                        <label class="form-check-label" for="q8d">
+                            D. Optimiser les ressources TI.
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p><strong>9. Lequel des éléments suivants n'est PAS un principe clé de COBIT 5 ?</strong></p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q9" id="q9a" value="a">
+                        <label class="form-check-label" for="q9a">
+                            A. Répondre aux besoins des parties prenantes
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q9" id="q9b" value="b">
+                        <label class="form-check-label" for="q9b">
+                            B. Gérer les projets en utilisant PRINCE2
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q9" id="q9c" value="c">
+                        <label class="form-check-label" for="q9c">
+                            C. Appliquer un cadre intégré unique
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q9" id="q9d" value="d">
+                        <label class="form-check-label" for="q9d">
+                            D. Séparer la Gouvernance de la Gestion
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p><strong>10. Le facilitateur "Information" dans COBIT 5 met l'accent sur :</strong></p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q10" id="q10a" value="a">
+                        <label class="form-check-label" for="q10a">
+                            A. Le matériel et les logiciels des TI
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q10" id="q10b" value="b">
+                        <label class="form-check-label" for="q10b">
+                            B. Les données et les connaissances produites et consommées par l'entreprise.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q10" id="q10c" value="c">
+                        <label class="form-check-label" for="q10c">
+                            C. La formation du personnel TI.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q10" id="q10d" value="d">
+                        <label class="form-check-label" for="q10d">
+                            D. La définition des objectifs de l'entreprise.
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p><strong>11. Quel domaine de processus COBIT 5 est responsable de l'acquisition, du développement et de l'implémentation de solutions TI ?</strong></p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q11" id="q11a" value="a">
+                        <label class="form-check-label" for="q11a">
+                            A. EDM
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q11" id="q11b" value="b">
+                        <label class="form-check-label" for="q11b">
+                            B. APO
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q11" id="q11c" value="c">
+                        <label class="form-check-label" for="q11c">
+                            C. BAI
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q11" id="q11d" value="d">
+                        <label class="form-check-label" for="q11d">
+                            D. DSS
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p><strong>12. Le processus DSS04 de COBIT 5 concerne la gestion de la continuité. Quel est son objectif ?</strong></p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q12" id="q12a" value="a">
+                        <label class="form-check-label" for="q12a">
+                            A. Gérer les budgets TI.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q12" id="q12b" value="b">
+                        <label class="form-check-label" for="q12b">
+                            B. Assurer la disponibilité continue des services TI en cas d'événements perturbateurs.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q12" id="q12c" value="c">
+                        <label class="form-check-label" for="q12c">
+                            C. Gérer les performances du personnel TI.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q12" id="q12d" value="d">
+                        <label class="form-check-label" for="q12d">
+                            D. Définir l'architecture d'entreprise.
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p><strong>13. Le principe "Appliquer un cadre intégré unique" signifie que COBIT 5 :</strong></p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q13" id="q13a" value="a">
+                        <label class="form-check-label" for="q13a">
+                            A. Remplace tous les autres cadres de gestion des TI.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q13" id="q13b" value="b">
+                        <label class="form-check-label" for="q13b">
+                            B. Agit comme un intégrateur, s'alignant et tirant parti d'autres normes et cadres.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q13" id="q13c" value="c">
+                        <label class="form-check-label" for="q13c">
+                            C. Est applicable uniquement aux grandes entreprises.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q13" id="q13d" value="d">
+                        <label class="form-check-label" for="q13d">
+                            D. Ne se concentre que sur la sécurité de l'information.
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p><strong>14. Le facilitateur "Services, Infrastructure et Applications" fait référence à :</strong></p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q14" id="q14a" value="a">
+                        <label class="form-check-label" for="q14a">
+                            A. Les documents de politique et les cadres de gouvernance.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q14" id="q14b" value="b">
+                        <label class="form-check-label" for="q14b">
+                            B. Les attitudes et les comportements des employés.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q14" id="q14c" value="c">
+                        <label class="form-check-label" for="q14c">
+                            C. Les composants tangibles du système informatique, y compris le matériel, les logiciels et les réseaux.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q14" id="q14d" value="d">
+                        <label class="form-check-label" for="q14d">
+                            D. Les compétences et les aptitudes du personnel.
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p><strong>15. Quelle est l'activité principale du domaine de processus MEA (Surveiller, Évaluer et Examiner) ?</strong></p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q15" id="q15a" value="a">
+                        <label class="form-check-label" for="q15a">
+                            A. La gestion des programmes et des projets.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q15" id="q15b" value="b">
+                        <label class="form-check-label" for="q15b">
+                            B. La surveillance de la performance, l'évaluation des contrôles et la vérification de la conformité.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q15" id="q15c" value="c">
+                        <label class="form-check-label" for="q15c">
+                            C. La définition de la stratégie TI.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q15" id="q15d" value="d">
+                        <label class="form-check-label" for="q15d">
+                            D. La gestion des incidents et des problèmes.
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p><strong>16. Quel processus du domaine EDM (Évaluer, Diriger et Surveiller) se concentre sur l'optimisation de la valeur des investissements TI ?</strong></p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q16" id="q16a" value="a">
+                        <label class="form-check-label" for="q16a">
+                            A. EDM01: Assurer la définition et la maintenance du cadre de gouvernance
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q16" id="q16b" value="b">
+                        <label class="form-check-label" for="q16b">
+                            B. EDM02: Assurer la livraison des bénéfices
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q16" id="q16c" value="c">
+                        <label class="form-check-label" for="q16c">
+                            C. EDM03: Assurer l'optimisation des risques
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q16" id="q16d" value="d">
+                        <label class="form-check-label" for="q16d">
+                            D. EDM04: Assurer l'optimisation des ressources
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p><strong>17. Le principe "Couvrir l'Entreprise de bout en bout" dans COBIT 5 implique que :</strong></p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q17" id="q17a" value="a">
+                        <label class="form-check-label" for="q17a">
+                            A. Seul le département TI est responsable de la gouvernance TI.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q17" id="q17b" value="b">
+                        <label class="form-check-label" for="q17b">
+                            B. La gouvernance et la gestion des TI s'étendent à toutes les fonctions et processus de l'entreprise.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q17" id="q17c" value="c">
+                        <label class="form-check-label" for="q17c">
+                            C. Le cadre est principalement destiné aux grandes multinationales.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q17" id="q17d" value="d">
+                        <label class="form-check-label" for="q17d">
+                            D. Les TI doivent fonctionner de manière indépendante des objectifs commerciaux.
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p><strong>18. Le facilitateur "Principes, Politiques et Cadres" est la base de :</strong></p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q18" id="q18a" value="a">
+                        <label class="form-check-label" for="q18a">
+                            A. L'exécution quotidienne des services TI.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q18" id="q18b" value="b">
+                        <label class="form-check-label" for="q18b">
+                            B. La traduction du comportement souhaité en orientations pratiques pour la gestion.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q18" id="q18c" value="c">
+                        <label class="form-check-label" for="q18c">
+                            C. Le développement de nouvelles applications logicielles.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q18" id="q18d" value="d">
+                        <label class="form-check-label" for="q18d">
+                            D. La gestion des fournisseurs TI.
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p><strong>19. Quel processus du domaine BAI (Construire, Acquérir et Implémenter) est responsable de la gestion de l'acceptation des changements et de la transition ?</strong></p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q19" id="q19a" value="a">
+                        <label class="form-check-label" for="q19a">
+                            A. BAI01: Gérer les programmes et les projets
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q19" id="q19b" value="b">
+                        <label class="form-check-label" for="q19b">
+                            B. BAI06: Gérer les changements
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q19" id="q19c" value="c">
+                        <label class="form-check-label" for="q19c">
+                            C. BAI07: Gérer l'acceptation des changements et la transition
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q19" id="q19d" value="d">
+                        <label class="form-check-label" for="q19d">
+                            D. BAI10: Gérer la configuration
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p><strong>20. L'un des objectifs de l'optimisation des ressources dans COBIT 5 (EDM04) est de s'assurer de l'utilisation optimale de :</strong></p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q20" id="q20a" value="a">
+                        <label class="form-check-label" for="q20a">
+                            A. Seules les ressources financières.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q20" id="q20b" value="b">
+                        <label class="form-check-label" for="q20b">
+                            B. Toutes les ressources TI (personnes, informations, infrastructure, applications).
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q20" id="q20c" value="c">
+                        <label class="form-check-label" for="q20c">
+                            C. Uniquement les logiciels.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q20" id="q20d" value="d">
+                        <label class="form-check-label" for="q20d">
+                            D. Les processus métier non liés aux TI.
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p><strong>21. Dans le cycle d'amélioration continue de COBIT 5, quelle phase correspond à la "Vérification" (Check) du cycle PDCA ?</strong></p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q21" id="q21a" value="a">
+                        <label class="form-check-label" for="q21a">
+                            A. Reconnaître le besoin
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q21" id="q21b" value="b">
+                        <label class="form-check-label" for="q21b">
+                            B. Définir l'état futur
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q21" id="q21c" value="c">
+                        <label class="form-check-label" for="q21c">
+                            C. Surveiller et Réviser
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q21" id="q21d" value="d">
+                        <label class="form-check-label" for="q21d">
+                            D. Implémenter
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Soumettre le Quiz</button>
+            </form>
+            <div id="quizResult" class="mt-4 p-3 border rounded" style="display: none;"></div>
+            <div class="mt-4">
+                <h6>Comment utiliser ce quiz pour une étude efficace :</h6>
+                <ul>
+                    <li><strong>Simulez les conditions d'examen :</strong> Essayez de compléter le quiz sans aide extérieure et dans un laps de temps défini.</li>
+                    <li><strong>Révisez toutes les réponses :</strong> Même pour les questions auxquelles vous avez répondu correctement, révisez les explications pour renforcer votre compréhension.</li>
+                    <li><strong>Identifiez les points faibles :</strong> Portez une attention particulière aux sujets où vous vous trompez fréquemment. Cela indique des domaines qui nécessitent une étude plus approfondie.</li>
+                    <li><strong>Ne vous contentez pas de mémoriser :</strong> Comprenez le "pourquoi" derrière les bonnes réponses, plutôt que de simplement les mémoriser. Cela vous aidera à répondre aux questions basées sur des scénarios.</li>
+                    <li><strong>Suivez les progrès :</strong> Faites plusieurs quiz au fil du temps pour suivre votre amélioration.</li>
+                </ul>
             </div>
-        </section>
+        </div>
+    </div>
+</section>
+
+
 
         <section id="exam-tips" class="my-5">
             <h2 class="section-title">Conseils Essentiels pour l'Examen COBIT 5</h2>
@@ -830,5 +1336,99 @@
             });
         });
     </script>
+	
+	
+	<script>
+    document.getElementById('quizForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const answers = {
+            q1: 'b',
+            q2: 'b',
+            q3: 'd',
+            q4: 'c',
+            q5: 'b',
+            q6: 'b',
+            q7: 'b',
+            q8: 'b',
+            q9: 'b',
+            q10: 'b',
+            q11: 'c',
+            q12: 'b',
+            q13: 'b',
+            q14: 'c',
+            q15: 'b',
+            q16: 'b',
+            q17: 'b',
+            q18: 'b',
+            q19: 'c',
+            q20: 'b',
+            q21: 'c'
+        };
+
+        let score = 0;
+        const totalQuestions = Object.keys(answers).length;
+        const quizResultDiv = document.getElementById('quizResult');
+        quizResultDiv.innerHTML = '';
+
+        for (let i = 1; i <= totalQuestions; i++) {
+            const questionName = `q${i}`;
+            const selectedOption = document.querySelector(`input[name="${questionName}"]:checked`);
+
+            if (selectedOption) {
+                if (selectedOption.value === answers[questionName]) {
+                    score++;
+                    quizResultDiv.innerHTML += `<p class="text-success">Question ${i}: Correcte !</p>`;
+                } else {
+                    quizResultDiv.innerHTML += `<p class="text-danger">Question ${i}: Incorrecte. La bonne réponse était ${answers[questionName].toUpperCase()}.</p>`;
+                }
+            } else {
+                quizResultDiv.innerHTML += `<p class="text-warning">Question ${i}: Non répondue.</p>`;
+            }
+        }
+
+        const percentage = (score / totalQuestions) * 100;
+        quizResultDiv.style.display = 'block';
+        if (percentage >= 65) {
+            quizResultDiv.innerHTML += `<p class="mt-3 fs-5 text-primary">Félicitations ! Vous avez obtenu ${score}/${totalQuestions} (${percentage.toFixed(2)}%). C'est un bon début !</p>`;
+        } else {
+            quizResultDiv.innerHTML += `<p class="mt-3 fs-5 text-danger">Vous avez obtenu ${score}/${totalQuestions} (${percentage.toFixed(2)}%). Continuez à étudier et réessayez !</p>`;
+        }
+
+        // Scroll to result
+        quizResultDiv.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // Smooth scrolling for navigation
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+
+    // Animation on scroll
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.card');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = 1;
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        cards.forEach(card => {
+            card.style.opacity = 0;
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(card);
+        });
+    });
+</script>
 </body>
 </html>
