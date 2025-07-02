@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certification COBIT 5 - Guide Complet</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: var(--dark-color);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--light-color) !important;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .badge {
+            padding: 8px 12px;
+            font-weight: 500;
+        }
+        
+        .accordion-button:not(.collapsed) {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        .progress {
+            height: 10px;
+            border-radius: 5px;
+        }
+        
+        .progress-bar {
+            background-color: var(--secondary-color);
+        }
+        
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        
+        /* Effets spéciaux */
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(52, 152, 219, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0); }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 2rem 0;
+            }
+            
+            .display-4 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--primary-color);">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-certificate me-2"></i>COBIT 5 Certification
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#principles">Principes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#enablers">Facilitateurs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#processes">Processus</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#resources">Ressources</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-sm btn-outline-light ms-2" href="#quiz">Quiz</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-3">Maîtrisez la Certification COBIT 5</h1>
+            <p class="lead mb-4">Guide complet pour réussir l'examen fondamental de gouvernance IT</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="#start" class="btn btn-light btn-lg px-4">Commencer</a>
+                <a href="#quiz" class="btn btn-outline-light btn-lg px-4">Quiz Test</a>
+            </div>
+            <div class="mt-4 floating">
+                <img src="https://via.placeholder.com/150" alt="COBIT 5 Certification" class="img-fluid" style="max-height: 150px;">
+            </div>
+        </div>
+    </section>
+
+    <!-- Introduction Section -->
+    <section id="start" class="container my-5">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="fw-bold mb-4">Qu'est-ce que COBIT 5 ?</h2>
+                <p class="lead">COBIT 5 (Control Objectives for Information and Related Technology) est le cadre de référence mondial pour la gouvernance et le management des technologies de l'information, développé par l'ISACA.</p>
+                <div class="alert alert-info mt-4">
+                    <strong>Objectif de la certification :</strong> Comprendre comment implémenter et gérer les meilleures pratiques de gouvernance IT pour aligner les technologies avec les objectifs métiers.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5 Principles Section -->
+    <section id="principles" class="container my-5">
+        <h2 class="text-center fw-bold mb-5">Les 5 Principes Fondamentaux de COBIT 5</h2>
+        <div class="row g-4">
+            <!-- Principle 1 -->
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex align-items-center">
+                        <span class="badge bg-primary me-2">1</span>
+                        <h5 class="mb-0">Satisfaire les besoins des parties prenantes</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Les décisions IT doivent créer de la valeur pour toutes les parties prenantes : actionnaires, clients, employés, régulateurs.</p>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Objectifs en cascade</li>
+                            <li class="list-group-item">Alignement stratégique</li>
+                            <li class="list-group-item">Communication transparente</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Principle 2 -->
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex align-items-center">
+                        <span class="badge bg-primary me-2">2</span>
+                        <h5 class="mb-0">Couvrir l'entreprise de bout en bout</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">L'IT n'est pas un silo : les responsabilités IT concernent toutes les fonctions de l'entreprise.</p>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Intégration IT/métier</li>
+                            <li class="list-group-item">Responsabilités partagées</li>
+                            <li class="list-group-item">Vision holistique</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Principle 3 -->
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex align-items-center">
+                        <span class="badge bg-primary me-2">3</span>
+                        <h5 class="mb-0">Référentiel unique intégré</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">COBIT 5 harmonise différents standards (ITIL, TOGAF, ISO 27001) pour une approche cohérente.</p>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Compatibilité avec ITIL</li>
+                            <li class="list-group-item">Alignement avec ISO 27001</li>
+                            <li class="list-group-item">Intégration TOGAF</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Principle 4 -->
+            <div class="col-md-6 mt-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex align-items-center">
+                        <span class="badge bg-primary me-2">4</span>
+                        <h5 class="mb-0">Approche holistique</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Appui sur 7 facilitateurs interconnectés pour couvrir tous les aspects de la gouvernance IT.</p>
+                        <div class="progress mt-3 mb-2">
+                            <div class="progress-bar" role="progressbar" style="width: 85%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small>Intégration des facilitateurs</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Principle 5 -->
+            <div class="col-md-6 mt-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex align-items-center">
+                        <span class="badge bg-primary me-2">5</span>
+                        <h5 class="mb-0">Gouvernance vs Management</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Distinction claire entre la gouvernance stratégique et la gestion opérationnelle.</p>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded">
+                                    <h6>Gouvernance</h6>
+                                    <small>Évaluer, Diriger, Surveiller</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded">
+                                    <h6>Management</h6>
+                                    <small>Planifier, Construire, Délivrer</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7 Enablers Section -->
+    <section id="enablers" class="container my-5 py-5 bg-light rounded-3">
+        <h2 class="text-center fw-bold mb-5">Les 7 Facilitateurs de COBIT 5</h2>
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <div class="accordion" id="enablersAccordion">
+                    <!-- Enabler 1 -->
+                    <div class="accordion-item mb-3 border-0 rounded overflow-hidden shadow-sm">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                                <span class="badge bg-primary me-3">1</span> Principes, Politiques et Cadres
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#enablersAccordion">
+                            <div class="accordion-body">
+                                <p>Base normative qui guide les comportements et décisions dans l'organisation.</p>
+                                <ul>
+                                    <li>Politiques de sécurité</li>
+                                    <li>Charte de gouvernance IT</li>
+                                    <li>Cadre de conformité</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Enabler 2 -->
+                    <div class="accordion-item mb-3 border-0 rounded overflow-hidden shadow-sm">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                                <span class="badge bg-primary me-3">2</span> Processus
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#enablersAccordion">
+                            <div class="accordion-body">
+                                <p>Chaînes d'activités à valeur ajoutée, mesurables et optimisables.</p>
+                                <ul>
+                                    <li>37 processus dans COBIT 5</li>
+                                    <li>Organisés en 5 domaines</li>
+                                    <li>Mesurés par des KPI et KGIs</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Enabler 3 -->
+                    <div class="accordion-item mb-3 border-0 rounded overflow-hidden shadow-sm">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                                <span class="badge bg-primary me-3">3</span> Structures organisationnelles
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#enablersAccordion">
+                            <div class="accordion-body">
+                                <p>Comités, directions et fonctions décisionnelles clés pour la gouvernance IT.</p>
+                                <ul>
+                                    <li>Comité de gouvernance IT</li>
+                                    <li>Office du projet</li>
+                                    <li>Structure RACI</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Enabler 4 -->
+                    <div class="accordion-item mb-3 border-0 rounded overflow-hidden shadow-sm">
+                        <h2 class="accordion-header" id="headingFour">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour">
+                                <span class="badge bg-primary me-3">4</span> Culture, éthique et comportement
+                            </button>
+                        </h2>
+                        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#enablersAccordion">
+                            <div class="accordion-body">
+                                <p>Moteur ou frein aux changements IT selon la culture d'entreprise.</p>
+                                <ul>
+                                    <li>Culture de sécurité</li>
+                                    <li>Éthique professionnelle</li>
+                                    <li>Gestion du changement</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Enabler 5 -->
+                    <div class="accordion-item mb-3 border-0 rounded overflow-hidden shadow-sm">
+                        <h2 class="accordion-header" id="headingFive">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive">
+                                <span class="badge bg-primary me-3">5</span> Information
+                            </button>
+                        </h2>
+                        <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#enablersAccordion">
+                            <div class="accordion-body">
+                                <p>La donnée comme actif clé de l'organisation, devant être utile, fiable et disponible.</p>
+                                <ul>
+                                    <li>Qualité des données</li>
+                                    <li>Classification de l'information</li>
+                                    <li>Gestion des connaissances</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Enabler 6 -->
+                    <div class="accordion-item mb-3 border-0 rounded overflow-hidden shadow-sm">
+                        <h2 class="accordion-header" id="headingSix">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix">
+                                <span class="badge bg-primary me-3">6</span> Services, infrastructure et applications
+                            </button>
+                        </h2>
+                        <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingSix" data-bs-parent="#enablersAccordion">
+                            <div class="accordion-body">
+                                <p>Support technique des processus IT et métier.</p>
+                                <ul>
+                                    <li>Architecture IT</li>
+                                    <li>Gestion des services</li>
+                                    <li>Applications métier</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Enabler 7 -->
+                    <div class="accordion-item mb-3 border-0 rounded overflow-hidden shadow-sm">
+                        <h2 class="accordion-header" id="headingSeven">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven">
+                                <span class="badge bg-primary me-3">7</span> Personnes, compétences et aptitudes
+                            </button>
+                        </h2>
+                        <div id="collapseSeven" class="accordion-collapse collapse" aria-labelledby="headingSeven" data-bs-parent="#enablersAccordion">
+                            <div class="accordion-body">
+                                <p>Personnel formé, compétent et motivé pour mettre en œuvre la gouvernance IT.</p>
+                                <ul>
+                                    <li>Plan de formation</li>
+                                    <li>Gestion des compétences</li>
+                                    <li>Développement professionnel</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Domains Section -->
+    <section id="processes" class="container my-5">
+        <h2 class="text-center fw-bold mb-5">Les 5 Domaines de Processus COBIT 5</h2>
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Domaine</th>
+                                <th>Acronyme</th>
+                                <th>Description</th>
+                                <th>Exemples de Processus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Evaluate, Direct and Monitor</strong></td>
+                                <td><span class="badge bg-primary">EDM</span></td>
+                                <td>Gouvernance stratégique de l'IT</td>
+                                <td>EDM01: Gérer la création de valeur IT</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Align, Plan and Organize</strong></td>
+                                <td><span class="badge bg-success">APO</span></td>
+                                <td>Alignement stratégique et planification</td>
+                                <td>APO01: Cadre de gouvernance IT</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Build, Acquire and Implement</strong></td>
+                                <td><span class="badge bg-info">BAI</span></td>
+                                <td>Mise en œuvre des solutions IT</td>
+                                <td>BAI01: Gérer les programmes et projets</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Deliver, Service and Support</strong></td>
+                                <td><span class="badge bg-warning">DSS</span></td>
+                                <td>Exploitation et support IT</td>
+                                <td>DSS01: Gérer les opérations</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Monitor, Evaluate and Assess</strong></td>
+                                <td><span class="badge bg-danger">MEA</span></td>
+                                <td>Contrôle et évaluation</td>
+                                <td>MEA01: Surveiller la performance</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-5">
+                    <h4 class="fw-bold mb-3">Cycle d'Amélioration Continue</h4>
+                    <div class="d-flex justify-content-center">
+                        <div class="position-relative" style="width: 100%; max-width: 600px;">
+                            <img src="https://via.placeholder.com/600x400" alt="Cycle COBIT 5" class="img-fluid rounded pulse">
+                            <button class="btn btn-primary position-absolute top-50 start-50 translate-middle" data-bs-toggle="modal" data-bs-target="#cycleModal">
+                                Voir le cycle
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resources Section -->
+    <section id="resources" class="container my-5 py-5 bg-light rounded-3">
+        <h2 class="text-center fw-bold mb-5">Ressources pour la Certification</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Documentation Officielle</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Framework COBIT 5</li>
+                            <li class="list-group-item">Guide d'Implémentation</li>
+                            <li class="list-group-item">Exemples de Cas</li>
+                            <li class="list-group-item">Modèles RACI</li>
+                        </ul>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="#" class="btn btn-outline-primary w-100">Télécharger</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Formations Recommandées</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Formation Fondamentale (2 jours)</li>
+                            <li class="list-group-item">Ateliers pratiques</li>
+                            <li class="list-group-item">Webinaires ISACA</li>
+                            <li class="list-group-item">Cours en ligne</li>
+                        </ul>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="#" class="btn btn-outline-success w-100">Voir les options</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Outils Pratiques</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Checklist d'examen</li>
+                            <li class="list-group-item">Fiches de révision</li>
+                            <li class="list-group-item">Cartes mentales</li>
+                            <li class="list-group-item">Glossaire COBIT</li>
+                        </ul>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="#" class="btn btn-outline-info w-100">Accéder aux outils</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quiz Section -->
+    <section id="quiz" class="container my-5">
+        <h2 class="text-center fw-bold mb-5">Testez Vos Connaissances</h2>
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Quiz COBIT 5 - 5 Questions</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="quizForm">
+                            <!-- Question 1 -->
+                            <div class="mb-4">
+                                <h6>1. Combien de principes fondamentaux COBIT 5 compte-t-il ?</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1a" value="a">
+                                    <label class="form-check-label" for="q1a">3</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1b" value="b">
+                                    <label class="form-check-label" for="q1b">5</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1c" value="c">
+                                    <label class="form-check-label" for="q1c">7</label>
+                                </div>
+                            </div>
+                            
+                            <!-- Question 2 -->
+                            <div class="mb-4">
+                                <h6>2. Quel domaine de processus inclut la gestion des programmes et projets ?</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2a" value="a">
+                                    <label class="form-check-label" for="q2a">EDM</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2b" value="b">
+                                    <label class="form-check-label" for="q2b">APO</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2c" value="c">
+                                    <label class="form-check-label" for="q2c">BAI</label>
+                                </div>
+                            </div>
+                            
+                            <!-- Question 3 -->
+                            <div class="mb-4">
+                                <h6>3. Quel facilitateur concerne la culture et l'éthique dans COBIT 5 ?</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3a" value="a">
+                                    <label class="form-check-label" for="q3a">Facilitateur 2</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3b" value="b">
+                                    <label class="form-check-label" for="q3b">Facilitateur 4</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3c" value="c">
+                                    <label class="form-check-label" for="q3c">Facilitateur 7</label>
+                                </div>
+                            </div>
+                            
+                            <!-- Question 4 -->
+                            <div class="mb-4">
+                                <h6>4. Quel est l'objectif principal de COBIT 5 ?</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4a" value="a">
+                                    <label class="form-check-label" for="q4a">Standardiser les technologies</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4b" value="b">
+                                    <label class="form-check-label" for="q4b">Créer de la valeur par l'IT</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4c" value="c">
+                                    <label class="form-check-label" for="q4c">Réduire les coûts IT</label>
+                                </div>
+                            </div>
+                            
+                            <!-- Question 5 -->
+                            <div class="mb-4">
+                                <h6>5. Quel standard est compatible avec COBIT 5 ?</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5a" value="a">
+                                    <label class="form-check-label" for="q5a">ITIL</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5b" value="b">
+                                    <label class="form-check-label" for="q5b">ISO 27001</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5c" value="c">
+                                    <label class="form-check-label" for="q5c">Tous ces standards</label>
+                                </div>
+                            </div>
+                            
+                            <button type="button" class="btn btn-primary mt-3" onclick="checkQuiz()">Vérifier les réponses</button>
+                        </form>
+                        
+                        <div id="quizResult" class="mt-4 alert d-none"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Exam Tips Section -->
+    <section class="container my-5">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card border-primary">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Conseils pour l'Examen</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">✅ L'examen contient 50 questions à choix multiples</li>
+                            <li class="list-group-item">✅ Durée : 40 minutes (score minimum de 65% requis)</li>
+                            <li class="list-group-item">✅ Concentrez-vous sur les 5 principes et 7 facilitateurs</li>
+                            <li class="list-group-item">✅ Maîtrisez la distinction gouvernance/management</li>
+                            <li class="list-group-item">✅ Pratiquez avec des questions d'examen blanc</li>
+                            <li class="list-group-item">✅ Revoyez le cycle d'amélioration continue</li>
+                        </ul>
+                        <div class="mt-3 text-center">
+                            <button class="btn btn-outline-primary me-2">Télécharger le guide d'examen</button>
+                            <button class="btn btn-primary">Simulateur d'examen</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal -->
+    <div class="modal fade" id="cycleModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cycle d'Amélioration Continue COBIT 5</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <img src="https://via.placeholder.com/800x600" alt="Cycle COBIT 5 détaillé" class="img-fluid">
+                    <ol class="mt-3">
+                        <li><strong>Reconnaître les besoins</strong>: Identifier les drivers de changement</li>
+                        <li><strong>Évaluer l'état actuel</strong>: Analyse des forces/faiblesses</li>
+                        <li><strong>Définir l'état futur</strong>: Objectifs stratégiques</li>
+                        <li><strong>Planifier la transition</strong>: Feuille de route</li>
+                        <li><strong>Mettre en œuvre</strong>: Gestion du changement</li>
+                        <li><strong>Surveiller</strong>: KPI et tableaux de bord</li>
+                        <li><strong>Institutionnaliser</strong>: Intégration culturelle</li>
+                    </ol>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5>Ressources</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">Documentation ISACA</a></li>
+                        <li><a href="#" class="text-white">Glossaire COBIT</a></li>
+                        <li><a href="#" class="text-white">FAQ Certification</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5>Contact</h5>
+                    <ul class="list-unstyled">
+                        <li>info@cobit-certification.fr</li>
+                        <li>+33 1 23 45 67 89</li>
+                        <li>Paris, France</li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Suivez-nous</h5>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="#" class="text-white"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-linkedin fa-lg"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-youtube fa-lg"></i></a>
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-outline-light">S'inscrire à la newsletter</button>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4 bg-light">
+            <p class="mb-0">&copy; 2023 Certification COBIT 5 - Tous droits réservés</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        // Quiz validation function
+        function checkQuiz() {
+            const answers = {
+                q1: 'b', // 5 principes
+                q2: 'c', // BAI
+                q3: 'b', // Facilitateur 4
+                q4: 'b', // Créer de la valeur
+                q5: 'c'  // Tous ces standards
+            };
+            
+            let score = 0;
+            const totalQuestions = Object.keys(answers).length;
+            
+            // Check each question
+            for (let i = 1; i <= totalQuestions; i++) {
+                const selectedOption = document.querySelector(`input[name="q${i}"]:checked`);
+                if (selectedOption && selectedOption.value === answers[`q${i}`]) {
+                    score++;
+                }
+            }
+            
+            // Display result
+            const resultDiv = document.getElementById('quizResult');
+            resultDiv.classList.remove('d-none', 'alert-success', 'alert-danger');
+            
+            const percentage = (score / totalQuestions) * 100;
+            if (percentage >= 80) {
+                resultDiv.classList.add('alert-success');
+                resultDiv.innerHTML = `<strong>Excellent !</strong> Vous avez obtenu ${score}/${totalQuestions} (${percentage}%). Vous êtes prêt pour l'examen !`;
+            } else if (percentage >= 50) {
+                resultDiv.classList.add('alert-warning');
+                resultDiv.innerHTML = `<strong>Bon travail !</strong> Vous avez obtenu ${score}/${totalQuestions} (${percentage}%). Revoyez quelques concepts.`;
+            } else {
+                resultDiv.classList.add('alert-danger');
+                resultDiv.innerHTML = `<strong>À améliorer.</strong> Vous avez obtenu ${score}/${totalQuestions} (${percentage}%). Consultez les ressources.`;
+            }
+            
+            // Scroll to result
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Animation on scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            cards.forEach(card => {
+                card.style.opacity = 0;
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>
