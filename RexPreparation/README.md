@@ -8,6 +8,6 @@ Presque là!
 Recommandations :
 - Révisez les principes fondamentaux de COBIT 5
 - Concentrez-vous sur les domaines de processus et leurs objectifs
--  Étudiez la cascade d'objectifs et les facteurs faccilitants(enabler)
+-  Étudiez la cascade d'objectifs et les facteurs facilitants(enabler)
 - Pratiquez avec davantage de questions sur les domaines où vous avez des difficultés
 - Consultez le guide d'étude officiel COBIT 5 Foundations
