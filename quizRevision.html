@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Révision COBIT 5</title>
+    <!-- Lien vers Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Lien vers Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Styles CSS personnalisés pour le quiz COBIT 5 */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e8f0f7; /* Un fond bleu clair doux */
+            color: #2c3e50; /* Couleur de texte principale */
+            padding-top: 30px;
+            padding-bottom: 30px;
+        }
+        .quiz-container {
+            max-width: 950px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.18); /* Ombre plus prononcée et élégante */
+            animation: fadeIn 1s ease-out; /* Animation d'apparition */
+        }
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #3498db; /* Bleu secondaire de Bootstrap */
+            font-weight: 700;
+            font-size: 2.8rem;
+            position: relative;
+            padding-bottom: 18px;
+        }
+        .quiz-header::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 5px;
+            background-color: #2c3e50; /* Couleur primaire */
+            border-radius: 3px;
+        }
+
+        .score-progress-container {
+            display: flex;
+            flex-direction: column; /* Stack score and progress vertically */
+            margin-bottom: 25px;
+            padding: 15px 25px;
+            background-color: #f0f8ff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .score-display, .question-progress-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 10px; /* Space between score and question count */
+        }
+        .question-progress-display {
+            margin-bottom: 0; /* No margin below the last item in the container */
+        }
+        .progress {
+            height: 15px;
+            border-radius: 10px;
+            background-color: #e9ecef;
+            flex-grow: 1;
+            margin-left: 20px; /* Space between question count and progress bar */
+        }
+        .progress-bar {
+            background-color: #3498db;
+            border-radius: 10px;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .question-card {
+            margin-bottom: 35px;
+            border: none; /* Supprimer la bordure par défaut */
+            border-radius: 12px;
+            padding: 30px;
+            background-color: #fefefe;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1); /* Ombre légère pour chaque carte */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .question-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .question-card h5 {
+            margin-bottom: 25px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 1.4rem;
+            line-height: 1.5;
+        }
+        .answer-option {
+            margin-bottom: 15px;
+            padding: 15px 20px;
+            border: 1px solid #d0d9e2;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            background-color: #f8fbfd;
+        }
+        .answer-option:hover {
+            background-color: #eef7ff; /* Bleu très clair au survol */
+            border-color: #9ac7ed;
+        }
+        .answer-option input[type="radio"] {
+            margin-right: 18px;
+            transform: scale(1.3); /* Agrandir les radios boutons */
+            cursor: pointer;
+        }
+        .answer-option label {
+            cursor: pointer;
+            flex-grow: 1; /* Permet au label de prendre l'espace restant */
+        }
+
+        /* Styles pour les retours (correct/incorrect) en mode apprentissage */
+        .answer-option.correct {
+            background-color: #d4edda; /* Vert clair */
+            border-color: #28a745; /* Vert foncé */
+            font-weight: bold;
+            color: #155724;
+            animation: pulseGreen 0.5s ease-out;
+        }
+        .answer-option.incorrect {
+            background-color: #f8d7da; /* Rouge clair */
+            border-color: #dc3545; /* Rouge foncé */
+            font-weight: bold;
+            color: #721c24;
+            animation: shakeRed 0.5s ease-out;
+        }
+        .rationale {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #e9eff5; /* Gris bleu clair */
+            border-left: 6px solid #607d8b; /* Gris ardoise */
+            border-radius: 8px;
+            font-size: 1em;
+            color: #455a64;
+            display: none; /* Masqué par défaut */
+            animation: slideInUp 0.4s ease-out;
+        }
+        .rationale ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+        .rationale li {
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        .rationale li:last-child {
+            margin-bottom: 0;
+        }
+
+        .hint {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff8e1; /* Jaune très clair */
+            border-left: 6px solid #ffb300; /* Jaune orangé */
+            border-radius: 8px;
+            font-size: 0.95em;
+            color: #a1887f;
+            display: none; /* Masqué par défaut */
+            animation: slideInUp 0.4s ease-out;
+        }
+        .show-info {
+            display: block;
+        }
+        .btn-toggle-info {
+            margin-top: 20px;
+            font-size: 0.95em;
+            padding: 10px 20px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .btn-toggle-info:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Styles pour le pop-up de résultats (modal) */
+        .results-modal .modal-content {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 20px;
+            text-align: center;
+        }
+        .results-modal .modal-header {
+            border-bottom: none;
+            padding-bottom: 0;
+            justify-content: center;
+        }
+        .results-modal .modal-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .results-modal .modal-body {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        .results-modal .score-text {
+            font-size: 1.8rem;
+            color: #495057;
+            margin-bottom: 15px;
+        }
+        .results-modal .score-percentage {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        .results-modal .recommendations {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #e9eff5;
+            border-radius: 10px;
+            border-left: 6px solid #3498db;
+            text-align: left;
+        }
+        .results-modal .recommendations h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        .results-modal .recommendations ul {
+            list-style-type: disc;
+            padding-left: 25px;
+        }
+        .results-modal .recommendations li {
+            margin-bottom: 8px;
+            color: #495057;
+        }
+        .results-modal .modal-footer {
+            border-top: none;
+            padding-top: 0;
+            justify-content: center;
+        }
+        .results-modal #restart-quiz-btn-modal {
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+        }
+
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulseGreen {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.005); }
+            100% { transform: scale(1); }
+        }
+        @keyframes shakeRed {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container quiz-container">
+        <h2 class="quiz-header">Quiz de Révision COBIT 5</h2>
+        <p class="text-center text-muted mb-5">Testez vos connaissances sur les principes, facilitateurs et processus de COBIT 5. Chaque question offre un indice et une explication détaillée.</p>
+
+        <div class="score-progress-container">
+            <div class="score-display">
+                <span id="current-score-display">Score: 0 / 0</span>
+            </div>
+            <div class="question-progress-display">
+                <span id="question-count-display">Question: 1 / 40</span>
+                <div class="progress">
+                    <div id="question-progress-bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="quiz-display">
+            <!-- La question actuelle sera chargée dynamiquement ici par JavaScript -->
+            <div class="text-center my-5" id="loading-spinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Chargement des questions...</span>
+                </div>
+                <p class="mt-2 text-muted">Chargement des questions du quiz...</p>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4" id="quiz-navigation">
+            <button id="prev-btn" class="btn btn-primary" disabled>
+                <i class="fas fa-arrow-left me-2"></i> Précédent
+            </button>
+            <button id="next-btn" class="btn btn-primary" disabled>
+                Suivant <i class="fas fa-arrow-right ms-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal pour les résultats du quiz -->
+    <div class="modal fade results-modal" id="resultsModal" tabindex="-1" aria-labelledby="resultsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resultsModalLabel">Résultats du Quiz</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="score-text">Vous avez répondu correctement à <span id="final-score-correct">0</span> questions sur <span id="final-score-total">0</span>.</p>
+                    <p class="score-percentage" id="final-score-percentage" style="color: #28a745;">0%</p>
+                    <div class="recommendations" id="final-recommendations">
+                        <!-- Recommandations seront insérées ici -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="restart-quiz-btn-modal">
+                        <i class="fas fa-redo me-2"></i> Recommencer le quiz
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lien vers Bootstrap JS Bundle (inclut Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const quizDisplayDiv = document.getElementById('quiz-display');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const quizNavigationDiv = document.getElementById('quiz-navigation');
+        const currentScoreDisplay = document.getElementById('current-score-display');
+        const questionCountDisplay = document.getElementById('question-count-display');
+        const questionProgressBar = document.getElementById('question-progress-bar');
+
+        // Modal elements
+        const resultsModal = new bootstrap.Modal(document.getElementById('resultsModal'));
+        const finalScoreCorrectSpan = document.getElementById('final-score-correct');
+        const finalScoreTotalSpan = document.getElementById('final-score-total');
+        const finalScorePercentage = document.getElementById('final-score-percentage');
+        const finalRecommendationsDiv = document.getElementById('final-recommendations');
+        const restartQuizBtnModal = document.getElementById('restart-quiz-btn-modal');
+
+        let currentQuestionIndex = 0;
+        let questions = []; // This will hold the parsed quiz data
+        let score = 0;
+        // Store answers to prevent re-scoring and re-enabling radio buttons
+        let userAnswers = new Array(40).fill(null); // null: not answered, {selectedOptionIndex: int, isCorrect: bool}: answered
+
+        // Données du quiz COBIT 5 (40 questions)
+        const quizData = {
+            "title": "Quiz de Révision COBIT 5",
+            "questions": [
+                {
+                    "question": "L'objectif d'entreprise intitulé « Optimisation des coûts des processus d'entreprise » est aligné sur quelle dimension du tableau de bord prospectif (BSC)?",
+                    "answer_options": [
+                        {"text": "Croissance", "rationale": "La croissance est une perspective du BSC, mais l'optimisation des coûts des processus est plus directement liée à l'efficacité interne.", "is_correct": false},
+                        {"text": "Client", "rationale": "La perspective client se concentre sur la satisfaction des clients et la valeur perçue, pas directement sur les coûts des processus internes.", "is_correct": false},
+                        {"text": "Interne", "rationale": "L'optimisation des coûts des processus d'entreprise est un objectif interne, visant à améliorer l'efficacité et l'efficience des opérations internes de l'organisation. Cela s'aligne directement avec la dimension 'Interne' du tableau de bord prospectif (BSC).", "is_correct": true}
+                    ],
+                    "hint": "Pensez à l'orientation de l'objectif : est-il tourné vers l'extérieur ou vers l'intérieur de l'organisation ?"
+                },
+                {
+                    "question": "Quel est l'objectif d'une entreprise qui a un facteur de conception de stratégie de leadership en matière de coûts?",
+                    "answer_options": [
+                        {"text": "Optimisation des coûts à long terme", "rationale": "L'optimisation des coûts à long terme est un objectif clé pour une stratégie de leadership en matière de coûts, car elle vise à maintenir un avantage concurrentiel durable grâce à une gestion efficace des dépenses.", "is_correct": true},
+                        {"text": "Péréquation des coûts à moyen terme", "rationale": "La péréquation des coûts à moyen terme n'est pas l'objectif principal d'une stratégie de leadership en matière de coûts, qui est plus axée sur la réduction et l'optimisation continues.", "is_correct": false},
+                        {"text": "Minimisation des coûts à court terme", "rationale": "Bien que la minimisation des coûts à court terme puisse être une tactique, l'objectif stratégique du leadership en matière de coûts est l'optimisation durable sur le long terme.", "is_correct": false}
+                    ],
+                    "hint": "Une stratégie de leadership en matière de coûts vise un avantage durable."
+                },
+                {
+                    "question": "Dans le cadre de la cascade des objectifs COBIT, les facteurs des parties prenantes sont transformés en :",
+                    "answer_options": [
+                        {"text": "la stratégie actionnable de l'entreprise", "rationale": "La stratégie actionnable de l'entreprise est une étape ultérieure, découlant des objectifs.", "is_correct": false},
+                        {"text": "Indicateurs de performance des unités commerciales.", "rationale": "Les indicateurs de performance sont des mesures, pas la transformation directe des facteurs des parties prenantes.", "is_correct": false},
+                        {"text": "le cadre de gouvernance de l'entreprise", "rationale": "Le cadre de gouvernance est une structure, pas le résultat de la transformation des facteurs des parties prenantes. Les facteurs des parties prenantes sont transformés en objectifs d'entreprise, qui sont le point de départ de la cascade des objectifs de COBIT.", "is_correct": true}
+                    ],
+                    "hint": "C'est la première étape de la cascade des objectifs, qui traduit les besoins en buts mesurables pour l'organisation."
+                },
+                {
+                    "question": "Lequel des éléments suivants DOIT être défini avant de déterminer les objectifs d'alignement ?",
+                    "answer_options": [
+                        {"text": "Lois et règlements externes", "rationale": "Les lois et règlements externes sont des facteurs environnementaux qui influencent les besoins des parties prenantes, mais ne sont pas directement définis avant les objectifs d'alignement.", "is_correct": false},
+                        {"text": "Facteurs et besoins des parties prenantes", "rationale": "Les facteurs et besoins des parties prenantes sont le point de départ de la cascade des objectifs. Ils doivent être définis avant de pouvoir déterminer les objectifs d'alignement, car ces derniers découlent des besoins des parties prenantes.", "is_correct": true},
+                        {"text": "Objectifs de gouvernance et de gestion", "rationale": "Les objectifs de gouvernance et de gestion sont définis après les besoins des parties prenantes et les objectifs d'entreprise, et avant les objectifs d'alignement.", "is_correct": false}
+                    ],
+                    "hint": "C'est la source initiale de toutes les exigences et attentes pour la gouvernance et la gestion des TI."
+                },
+                {
+                    "question": "Le time-to-market est un marché qui est directement lié à lequel des objectifs d'entreprise suivants?",
+                    "answer_options": [
+                        {"text": "Optimisation de la fonctionnalité des processus d'affaires internes", "rationale": "L'optimisation de la fonctionnalité des processus d'affaires internes est liée à l'efficacité opérationnelle, mais pas directement au time-to-market.", "is_correct": false},
+                        {"text": "Portefeuille de produits et services compétitifs", "rationale": "Le time-to-market est directement lié à la capacité de l'entreprise à lancer rapidement de nouveaux produits et services compétitifs sur le marché, ce qui est un objectif clé pour la compétitivité.", "is_correct": true},
+                        {"text": "Programmes de transformation numérique gérés", "rationale": "Les programmes de transformation numérique gérés sont des moyens d'atteindre des objectifs, mais pas l'objectif direct lié au time-to-market.", "is_correct": false}
+                    ],
+                    "hint": "Cet objectif concerne la vitesse et l'agilité de l'entreprise sur le marché."
+                },
+                {
+                    "question": "Laquelle des mesures suivantes serait appropriée associée à un objectif d'entreprise de « continuité et disponibilité des services d'entreprise » ?",
+                    "answer_options": [
+                        {"text": "Niveaux de satisfaction du conseil d'administration et de la haute direction à l'égard des capacités de processus d'affaires", "rationale": "Ceci est lié à la satisfaction générale et non spécifiquement à la continuité et disponibilité des services.", "is_correct": false},
+                        {"text": "Ratio des incidents importants qui n'ont pas été relevés dans les évaluations des risques par rapport au nombre total d'incidents", "rationale": "Ceci est lié à la gestion des risques, pas directement à la continuité et disponibilité des services.", "is_correct": false},
+                        {"text": "Nombre d'heures de traitement des activités perdues en raison d'interruptions de service imprévues", "rationale": "Le nombre d'heures de traitement des activités perdues en raison d'interruptions de service imprévues est une mesure directe de l'impact des interruptions sur la continuité et la disponibilité des services, ce qui en fait une mesure appropriée.", "is_correct": true}
+                    ],
+                    "hint": "Pensez à l'impact direct d'une interruption de service."
+                },
+                {
+                    "question": "Lequel des objectifs d'entreprise suivants relève de la dimension Client du tableau de bord prospectif informatique?",
+                    "answer_options": [
+                        {"text": "Exécution des programmes dans les délais et les budgets impartis", "rationale": "Ceci est un objectif interne lié à la gestion de projet.", "is_correct": false},
+                        {"text": "Innovation produit et commerciale", "rationale": "L'innovation produit et commerciale est un objectif qui impacte directement la capacité de l'entreprise à satisfaire et attirer les clients, ce qui s'aligne avec la dimension 'Client' du tableau de bord prospectif.", "is_correct": true},
+                        {"text": "Qualité de l'information de gestion", "rationale": "La qualité de l'information de gestion est un objectif interne lié à l'efficacité des processus.", "is_correct": false}
+                    ],
+                    "hint": "La dimension client se concentre sur la valeur perçue par les clients et leur satisfaction."
+                },
+                {
+                    "question": "Laquelle des options suivantes se répercute sur les objectifs de l'entreprise ?",
+                    "answer_options": [
+                        {"text": "Besoins des parties prenantes", "rationale": "Les besoins des parties prenantes sont le point de départ de la cascade des objectifs. Ils se répercutent directement sur les objectifs de l'entreprise, qui sont ensuite traduits en objectifs liés aux TI.", "is_correct": true},
+                        {"text": "Objectifs organisationnels", "rationale": "Les objectifs organisationnels sont synonymes d'objectifs d'entreprise.", "is_correct": false},
+                        {"text": "Stratégie d'entreprise", "rationale": "La stratégie d'entreprise est un plan pour atteindre les objectifs, pas ce qui se répercute sur les objectifs eux-mêmes.", "is_correct": false}
+                    ],
+                    "hint": "C'est le point de départ de la cascade des objectifs."
+                },
+                {
+                    "question": "Lequel des paramètres suivants permettrait le mieux à une entreprise d'évaluer un objectif d'alignement spécifiquement lié à la sécurité de l'information et à la confidentialité?",
+                    "answer_options": [
+                        {"text": "Ratio et ampleur des décisions d'affaires erronées dans lesquelles des renseignements erronés liés à l'I&T ont été un facteur clé", "rationale": "Ceci est lié à la qualité de l'information, pas spécifiquement à la sécurité et confidentialité.", "is_correct": false},
+                        {"text": "Nombre de processus métier critiques pris en charge par une infrastructure et des applications à jour", "rationale": "Ceci est lié à la disponibilité et à la performance, pas directement à la sécurité et confidentialité.", "is_correct": false},
+                        {"text": "Nombre d'incidents de confidentialité causant des pertes financières, des perturbations des activités ou de l'embarras pour le public.", "rationale": "Le nombre d'incidents de confidentialité est une mesure directe de l'efficacité des contrôles de sécurité et de confidentialité, ce qui en fait le paramètre le plus pertinent pour évaluer cet objectif.", "is_correct": true}
+                    ],
+                    "hint": "La mesure la plus pertinente est celle qui quantifie directement les échecs liés à la confidentialité."
+                },
+                {
+                    "question": "Laquelle des mesures suivantes serait appropriée pour s'aligner sur un objectif de « livraison des programmes dans les délais, dans le respect du budget et du respect des exigences et des normes de qualité » ?",
+                    "answer_options": [
+                        {"text": "Pourcentage d'intervenants satisfaits de la qualité du programme ou du projet", "rationale": "Le pourcentage d'intervenants satisfaits de la qualité du programme ou du projet est une mesure directe de la réussite de la livraison des programmes en termes de qualité et de satisfaction des exigences, ce qui est essentiel pour cet objectif.", "is_correct": true},
+                        {"text": "Pourcentage du personnel de l'entreprise satisfait que la prestation des services de TI respecte les niveaux de service convenus", "rationale": "Ceci est lié à la satisfaction des services TI, pas spécifiquement à la livraison des programmes.", "is_correct": false},
+                        {"text": "Niveau de satisfaction des utilisateurs à l'égard de la qualité et de la disponibilité des informations de gestion liées à l'I&T", "rationale": "Ceci est lié à la qualité de l'information, pas spécifiquement à la livraison des programmes.", "is_correct": false}
+                    ],
+                    "hint": "L'objectif est centré sur la qualité et la conformité des programmes livrés."
+                },
+                {
+                    "question": "L'objectif d'alignement « Fournir des services I&T conformément aux exigences de l'entreprise » est organisé en quelle dimension du tableau de bord prospectif (BSC) IT?",
+                    "answer_options": [
+                        {"text": "Client", "rationale": "La dimension 'Client' du tableau de bord prospectif TI est la plus appropriée pour un objectif d'alignement tel que 'Fournir des services I&T conformément aux exigences de l'entreprise', car elle se concentre sur la satisfaction des besoins et des attentes des utilisateurs et des parties prenantes des services TI.", "is_correct": true},
+                        {"text": "Financier", "rationale": "La dimension financière se concentre sur les aspects économiques, pas directement sur la conformité aux exigences de service.", "is_correct": false},
+                        {"text": "Interne", "rationale": "La dimension interne se concentre sur l'efficacité des processus internes, mais la fourniture de services est plus orientée client.", "is_correct": false}
+                    ],
+                    "hint": "Cet objectif est axé sur la satisfaction des utilisateurs des services TI."
+                },
+                {
+                    "question": "Lequel des objectifs de gestion suivants est lié à l'optimisation du rendement du système ?",
+                    "answer_options": [
+                        {"text": "Cadre de gestion de l'I&T", "rationale": "Un cadre de gestion est une structure, pas un objectif lié au rendement du système.", "is_correct": false},
+                        {"text": "Disponibilité et capacité gérée", "rationale": "La disponibilité et la capacité gérée sont directement liées à l'optimisation du rendement du système, car elles garantissent que les ressources sont utilisées efficacement et que le système est disponible lorsque nécessaire.", "is_correct": true},
+                        {"text": "Contrats de services gérés", "rationale": "Les contrats de services gérés sont liés à la gestion des fournisseurs, pas directement au rendement du système.", "is_correct": false}
+                    ],
+                    "hint": "Pensez aux facteurs qui assurent que le système fonctionne de manière optimale."
+                },
+                {
+                    "question": "Lequel des objectifs de gestion suivants est lié à l'optimisation du rendement du système ?",
+                    "answer_options": [
+                        {"text": "Un. Cadre de gestion de l'I&T", "rationale": "Un cadre de gestion est une structure, pas un objectif lié au rendement du système.", "is_correct": false},
+                        {"text": "B. Disponibilité et capacité gérée", "rationale": "La disponibilité et la capacité gérée sont directement liées à l'optimisation du rendement du système, car elles garantissent que les ressources sont utilisées efficacement et que le système est disponible lorsque nécessaire.", "is_correct": true},
+                        {"text": "C. Contrats de services gérés", "rationale": "Les contrats de services gérés sont liés à la gestion des fournisseurs, pas directement au rendement du système.", "is_correct": false}
+                    ],
+                    "hint": "Cet objectif est crucial pour la performance et la fiabilité des systèmes."
+                },
+                {
+                    "question": "Lequel des éléments suivants est le PLUS important pour assurer la confiance dans les opérations, la confiance dans l'atteinte des objectifs de l'entreprise et une compréhension adéquate du risque résiduel?",
+                    "answer_options": [
+                        {"text": "Un plan d'intervention en matière de continuité des opérations", "rationale": "Un plan de continuité est important pour la résilience, mais pas le plus important pour la confiance générale et la compréhension du risque résiduel.", "is_correct": false},
+                        {"text": "Un cadre de gestion des risques", "rationale": "Un cadre de gestion des risques est essentiel pour identifier, évaluer et traiter les risques, mais un système de contrôles internes est plus direct pour la confiance dans les opérations.", "is_correct": false},
+                        {"text": "Un système géré de contrôles internes", "rationale": "Un système géré de contrôles internes est le PLUS important pour assurer la confiance dans les opérations, l'atteinte des objectifs et une compréhension adéquate du risque résiduel, car il fournit les mécanismes pour atténuer les risques et garantir la fiabilité des processus.", "is_correct": true}
+                    ],
+                    "hint": "Ce système est la base de la fiabilité et de la maîtrise des opérations."
+                },
+                {
+                    "question": "Lequel des énoncés suivants décrit le mieux l'objectif de gestion de l'innovation gérée du modèle de base COBIT?",
+                    "answer_options": [
+                        {"text": "Un. Optimisez les capacités informatiques disponibles pour soutenir la stratégie et la feuille de route informatiques.", "rationale": "Ceci est plus lié à la gestion des ressources et à la planification stratégique.", "is_correct": false},
+                        {"text": "B. Obtenez un avantage concurrentiel, améliorez l'expérience client et améliorez l'efficacité opérationnelle.", "rationale": "L'objectif de gestion de l'innovation gérée vise à tirer parti des nouvelles technologies et approches pour obtenir un avantage concurrentiel, améliorer l'expérience client et accroître l'efficacité opérationnelle.", "is_correct": true},
+                        {"text": "C. Soutenir la stratégie de transformation numérique de l'organisation et fournir la valeur souhaitée.", "rationale": "Ceci est un objectif plus large de transformation numérique, pas spécifiquement l'innovation gérée.", "is_correct": false}
+                    ],
+                    "hint": "L'innovation gérée est axée sur l'exploitation des nouvelles opportunités pour améliorer la position de l'entreprise."
+                },
+                {
+                    "question": "Lequel des éléments suivants est ESSENTIEL pour s'assurer que les décisions liées à l'I&T sont alignées sur les stratégies et les objectifs de l'entreprise ?",
+                    "answer_options": [
+                        {"text": "A. Le respect des exigences légales, contractuelles et réglementaires est confirmé.", "rationale": "Ceci est lié à la conformité, pas directement à l'alignement stratégique.", "is_correct": false},
+                        {"text": "B. Les processus de technologie et d'innovation sont supervisés par le conseil.", "rationale": "La supervision des processus par le conseil est essentielle pour s'assurer que les décisions liées à l'I&T sont alignées sur les stratégies et les objectifs de l'entreprise, car cela garantit une direction et un contrôle au plus haut niveau.", "is_correct": true},
+                        {"text": "C. L'assurance des contrôles est obtenue auprès d'auditeurs informatiques indépendants.", "rationale": "L'assurance des contrôles est importante pour la fiabilité, mais pas directement pour l'alignement stratégique.", "is_correct": false}
+                    ],
+                    "hint": "L'alignement stratégique nécessite une implication et une supervision de la haute direction."
+                },
+                {
+                    "question": "Quel est le principe clé pour la gouvernance et la gestion de l'informatique d'entreprise ?",
+                    "answer_options": [
+                        {"text": "Gestion des opérations informatiques", "rationale": "La gestion des opérations est une activité, pas un principe clé de gouvernance.", "is_correct": false},
+                        {"text": "Assurer l'optimisation des ressources", "rationale": "L'optimisation des ressources est un objectif de gouvernance, pas un principe clé.", "is_correct": false},
+                        {"text": "Favoriser une approche holistique", "rationale": "Le principe de 'Favoriser une approche holistique' est un des principes clés de COBIT 5, soulignant que la gouvernance et la gestion des TI doivent considérer tous les aspects pertinents de l'entreprise.", "is_correct": true},
+                        {"text": "Gestion de l'information", "rationale": "La gestion de l'information est un facilitateur, pas un principe clé.", "is_correct": false}
+                    ],
+                    "hint": "Ce principe met l'accent sur la prise en compte de tous les éléments pertinents de l'entreprise."
+                },
+                {
+                    "question": "Quel pourcentage représente l'atteinte complète d'un attribut dans un processus évalué, tel que défini par l'approche d'évaluation COBIT 5?",
+                    "answer_options": [
+                        {"text": "100%", "rationale": "L'atteinte complète d'un attribut signifie que l'attribut est pleinement mis en œuvre et opérationnel, ce qui correspond à 100%.", "is_correct": true},
+                        {"text": "85% à 100%", "rationale": "Ceci correspond généralement à une note 'Grandement' (G), pas 'Complètement'.", "is_correct": false},
+                        {"text": "75% à 100%", "rationale": "Ceci correspond à une note 'Largement' ou 'Substantiellement'.", "is_correct": false},
+                        {"text": "En moyenne 85%", "rationale": "Ceci est une moyenne, pas la définition de l'atteinte complète.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la signification de 'complètement' dans un contexte de mesure."
+                },
+                {
+                    "question": "Identifiez le mot manquant dans la phrase suivante. La définition de (?) est un ensemble de pratiques influencées par les politiques et les procédures de l'entreprise qui prennent des données provenant d'un certain nombre de sources, manipulent les données et produisent des extrants.",
+                    "answer_options": [
+                        {"text": "Principes", "rationale": "Les principes sont des lignes directrices, pas un ensemble de pratiques avec des intrants et extrants.", "is_correct": false},
+                        {"text": "Objectifs intrinsèques", "rationale": "Les objectifs intrinsèques sont des critères de qualité de l'information.", "is_correct": false},
+                        {"text": "Objectifs de l'entreprise", "rationale": "Les objectifs de l'entreprise sont des buts, pas un ensemble de pratiques.", "is_correct": false},
+                        {"text": "Processus", "rationale": "Cette description correspond à la définition d'un 'Processus' dans COBIT 5, qui est un ensemble de pratiques qui transforment des intrants en extrants, guidées par des politiques et des procédures.", "is_correct": true}
+                    ],
+                    "hint": "C'est la manière dont les activités sont organisées pour atteindre un résultat."
+                },
+                {
+                    "question": "Quel est le facteur qui peut indiquer la nécessité d'améliorer la gouvernance de l'informatique d'entreprise ?",
+                    "answer_options": [
+                        {"text": "Un. Il est nécessaire d'adapter COBIT et d'autres bonnes pratiques et normes de soutien au contexte unique de l'entreprise", "rationale": "Ceci est une activité de mise en œuvre, pas un indicateur de problème de gouvernance.", "is_correct": false},
+                        {"text": "B. Des incidents importants liés au risque informatique, tels que la perte de données ou l'échec d'un projet, ont été survenus", "rationale": "Des incidents importants liés au risque informatique sont des 'points sensibles' ou des déclencheurs qui indiquent clairement la nécessité d'améliorer la gouvernance de l'informatique d'entreprise.", "is_correct": true},
+                        {"text": "C. Il est nécessaire de se concentrer sur les gains rapides et de donner la priorité aux améliorations les plus bénéfiques qui sont #a>>>>e*1 lo mettre en œuvre", "rationale": "Ceci est une approche de gestion de projet, pas un indicateur de problème de gouvernance.", "is_correct": false},
+                        {"text": "D. Les rôles et responsabilités clés du programme devraient être définis et attribués", "rationale": "Ceci est une activité de planification, pas un indicateur de problème de gouvernance.", "is_correct": false}
+                    ],
+                    "hint": "Pensez aux événements négatifs qui révèlent des lacunes dans la gouvernance."
+                },
+                {
+                    "question": "Quelle affirmation décrit la différence entre les produits de travail spécifiques et génériques?",
+                    "answer_options": [
+                        {"text": "Un. Des produits de travail spécifiques sont définis à chaque niveau de capacité, les produits de travail génériques sont définis au niveau organisationnel", "rationale": "Les produits de travail génériques sont liés aux attributs génériques de processus, pas au niveau organisationnel.", "is_correct": false},
+                        {"text": "B. Des produits de travail spécifiques sont associés aux objectifs liés à l'informatique, les produits de travail génériques sont associés aux objectifs d'entreprise de niveau supérieur", "rationale": "Les produits de travail spécifiques sont les extrants concrets d'un processus particulier, tandis que les produits de travail génériques sont des éléments plus abstraits qui s'appliquent à tous les processus à un certain niveau de capacité.", "is_correct": false},
+                        {"text": "C. Des produits de travail spécifiques sont définis pour chaque processus, des produits de travail génériques sont définis pour tous les processus génériques du niveau de capacité 2 à 5", "rationale": "Les produits de travail spécifiques sont les extrants concrets d'un processus particulier, tandis que les produits de travail génériques sont des éléments plus abstraits qui s'appliquent à tous les processus à un certain niveau de capacité, en particulier du niveau 2 à 5.", "is_correct": true},
+                        {"text": "D. Les produits de travail spécifiques définissent les objectifs au niveau de l'activité, les produits de travail génériques définissent les objectifs de niveau d' processus", "rationale": "Les produits de travail ne définissent pas les objectifs, mais les réalisent.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la granularité et à l'applicabilité de chaque type de produit de travail."
+                },
+                {
+                    "question": "Quel domaine de processus est le PLUS adapté pour des compétences telles que la gestion de projet et la gestion de capacité?",
+                    "answer_options": [
+                        {"text": "Un. Surveiller, évaluer et évaluer (MEA)", "rationale": "MEA est axé sur la surveillance et l'évaluation, pas la gestion de projet ou de capacité.", "is_correct": false},
+                        {"text": "B. Livraison, service et soutien (DSS)", "rationale": "DSS concerne les opérations quotidiennes et le support, pas la gestion de projet ou de capacité.", "is_correct": false},
+                        {"text": "C. Construire, acquérir et mettre en œuvre (BAI)", "rationale": "Le domaine BAI (Construire, Acquérir et Mettre en œuvre) est le plus adapté pour des compétences telles que la gestion de projet et la gestion de capacité, car il couvre le développement, l'acquisition et le déploiement de solutions et de services TI.", "is_correct": true},
+                        {"text": "D. Aligner, planifier et organiser (APO)", "rationale": "APO est axé sur la stratégie et la planification générale, pas spécifiquement la gestion de projet ou de capacité au niveau de l'exécution.", "is_correct": false}
+                    ],
+                    "hint": "Ce domaine est responsable de la réalisation des solutions TI."
+                },
+                {
+                    "question": "Identifiez le mot manquant dans la phrase suivante. La gouvernance, c'est [?] et décider entre les différentes parties prenantes >>>> valorise les intérêts.",
+                    "answer_options": [
+                        {"text": "A. Transformer", "rationale": "Transformer est une action générale, pas spécifique à la gouvernance.", "is_correct": false},
+                        {"text": "B. Sélection", "rationale": "La gouvernance implique la 'sélection' et la prise de décision entre les intérêts parfois divergents des parties prenantes pour créer de la valeur.", "is_correct": true},
+                        {"text": "C. Soutenir", "rationale": "Soutenir est une action, mais pas le concept clé de la gouvernance dans ce contexte.", "is_correct": false},
+                        {"text": "D. Négociation", "rationale": "La négociation peut être une partie de la gouvernance, mais 'sélection' est plus englobant pour la prise de décision.", "is_correct": false}
+                    ],
+                    "hint": "La gouvernance implique de choisir la meilleure voie parmi plusieurs options."
+                },
+                {
+                    "question": "À quel niveau les entrées et les sorties sont-elles définies?",
+                    "answer_options": [
+                        {"text": "A. Processus", "rationale": "Les entrées et les sorties sont définies au niveau du processus, car un processus transforme des intrants en extrants pour atteindre un objectif spécifique.", "is_correct": true},
+                        {"text": "B. Pratique de gestion", "rationale": "Une pratique de gestion est un ensemble d'activités, mais les entrées/sorties sont définies pour l'ensemble du processus.", "is_correct": false},
+                        {"text": "C. Activité", "rationale": "Une activité est une étape au sein d'un processus, et bien qu'elle ait des intrants/extrants, la définition globale se fait au niveau du processus.", "is_correct": false},
+                        {"text": "D. Activité détaillée", "rationale": "Une activité détaillée est une sous-étape, trop granulaire pour la définition globale des entrées/sorties.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à l'unité fondamentale de travail qui a des débuts et des fins clairs."
+                },
+                {
+                    "question": "Quelle pratique n'aiderait pas à encourager le comportement souhaité dans une entreprise ?",
+                    "answer_options": [
+                        {"text": "A. Mise en place d'un système de bonus", "rationale": "Un système de bonus peut encourager le comportement souhaité.", "is_correct": false},
+                        {"text": "B. Communication de l'application des politiques", "rationale": "La communication claire des politiques et de leur application encourage la conformité.", "is_correct": false},
+                        {"text": "C. Désignation de champions d'affaires", "rationale": "La désignation de champions d'affaires peut encourager le comportement souhaité en fournissant des modèles et des soutiens.", "is_correct": false},
+                        {"text": "D. Publication des procédures d'escalade", "rationale": "La publication des procédures d'escalade ne contribue pas directement à encourager le comportement souhaité; elle définit plutôt un mécanisme de résolution des problèmes, ce qui est une bonne pratique mais pas un levier de motivation comportementale.", "is_correct": true}
+                    ],
+                    "hint": "Pensez à ce qui motive ou influence directement le comportement des employés."
+                },
+                {
+                    "question": "Quel élément décrit un élément clé d'un système de gouvernance?",
+                    "answer_options": [
+                        {"text": "A. Établissement du cadre de gouvernance", "rationale": "L'établissement du cadre de gouvernance est un élément clé d'un système de gouvernance, car il définit la structure, les rôles et les responsabilités pour la prise de décision et la supervision.", "is_correct": true},
+                        {"text": "B. Identifier les responsabilités en matière de gouvernance", "rationale": "L'identification des responsabilités est une partie de l'établissement du cadre.", "is_correct": false},
+                        {"text": "C. Assurer le respect de la réglementation", "rationale": "Assurer le respect de la réglementation est un objectif de gouvernance, pas un élément clé du système lui-même.", "is_correct": false},
+                        {"text": "D. Optimisation des actifs, des ressources et des capacités informatiques", "rationale": "Ceci est un objectif de gestion, pas un élément clé du système de gouvernance.", "is_correct": false}
+                    ],
+                    "hint": "C'est la fondation sur laquelle repose toute la gouvernance."
+                },
+                {
+                    "question": "Quel domaine de processus est le plus adapté aux compétences telles que la stratégie informatique et l'architecture d'entreprise?",
+                    "answer_options": [
+                        {"text": "A. LSS", "rationale": "LSS (Livraison, Service et Soutien) est axé sur les opérations quotidiennes.", "is_correct": false},
+                        {"text": "B. BAI", "rationale": "BAI (Construire, Acquérir et Mettre en œuvre) est axé sur la construction et l'acquisition de solutions.", "is_correct": false},
+                        {"text": "C. MEA", "rationale": "MEA (Surveiller, Évaluer et Évaluer) est axé sur la surveillance et l'évaluation.", "is_correct": false},
+                        {"text": "D. APO", "rationale": "Le domaine APO (Aligner, Planifier et Organiser) est le plus adapté aux compétences telles que la stratégie informatique et l'architecture d'entreprise, car il se concentre sur l'alignement stratégique des TI avec les objectifs de l'entreprise et la planification des ressources.", "is_correct": true}
+                    ],
+                    "hint": "Ce domaine est responsable de la direction stratégique des TI."
+                },
+                {
+                    "question": "Lequel des énoncés suivants est correcte ?",
+                    "answer_options": [
+                        {"text": "A. Changement de stratégie", "rationale": "Le changement de stratégie est un facteur externe qui peut influencer la gouvernance et la gestion des TI, ce qui en fait un énoncé correct dans le contexte des facteurs de conception de COBIT 5.", "is_correct": true},
+                        {"text": "B. Changer d'entreprise", "rationale": "Changer d'entreprise est une action, pas un énoncé correct dans ce contexte.", "is_correct": false},
+                        {"text": "C. Règlementation environnementale", "rationale": "La réglementation environnementale est un facteur externe, mais 'changement de stratégie' est un exemple plus direct de facteur de conception.", "is_correct": false},
+                        {"text": "D. Utilisation des évolutions technologiques", "rationale": "L'utilisation des évolutions technologiques est une réponse aux changements, pas un énoncé correct en soi.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à un facteur qui pousse l'organisation à adapter sa gouvernance TI."
+                },
+                {
+                    "question": "Quel est l'objectif des catalyseurs du cadre COBIT 5?",
+                    "answer_options": [
+                        {"text": "A. Mettre en place une gouvernance performante", "rationale": "Les catalyseurs contribuent à une gouvernance performante, mais ce n'est pas leur seul objectif.", "is_correct": false},
+                        {"text": "B. Mettre en œuvre un système de gestion pour l'informatique d'entreprise", "rationale": "Les catalyseurs sont essentiels pour la mise en œuvre d'un système de gestion efficace.", "is_correct": false},
+                        {"text": "C. Aider à atteindre les objectifs de gouvernance des entreprises", "rationale": "Les catalyseurs sont des facteurs qui, collectivement, aident à atteindre les objectifs de gouvernance et de gestion des entreprises. Ils sont les 'ingrédients' nécessaires à la réussite.", "is_correct": false},
+                        {"text": "D. Tout ce qui précède", "rationale": "Les catalyseurs (facilitateurs) de COBIT 5 ont pour objectif de mettre en place une gouvernance performante, de mettre en œuvre un système de gestion pour l'informatique d'entreprise, et d'aider à atteindre les objectifs de gouvernance des entreprises. Ils sont interdépendants et contribuent à tous ces aspects.", "is_correct": true}
+                    ],
+                    "hint": "Les catalyseurs sont les éléments essentiels qui permettent la réalisation des objectifs de gouvernance et de gestion."
+                },
+                {
+                    "question": "Quel domaine de processus est le plus adapté aux compétences telles que la gestion de la disponibilité et la gestion des problèmes ?",
+                    "answer_options": [
+                        {"text": "A. MEA", "rationale": "MEA (Surveiller, Évaluer et Évaluer) est axé sur la surveillance et l'évaluation, pas la gestion de la disponibilité ou des problèmes.", "is_correct": false},
+                        {"text": "B. LSS", "rationale": "Le domaine LSS (Livraison, Service et Soutien) est le plus adapté aux compétences telles que la gestion de la disponibilité et la gestion des problèmes, car il couvre les opérations quotidiennes des services TI, y compris la garantie de leur disponibilité et la résolution des problèmes.", "is_correct": true},
+                        {"text": "C. BAI", "rationale": "BAI (Construire, Acquérir et Mettre en œuvre) est axé sur la construction et l'acquisition de solutions.", "is_correct": false},
+                        {"text": "D. APO", "rationale": "APO (Aligner, Planifier et Organiser) est axé sur la stratégie et la planification générale.", "is_correct": false}
+                    ],
+                    "hint": "Ce domaine est responsable de l'exécution et du support des services TI."
+                },
+                {
+                    "question": "Quel type d'objectif de processus garantit que le processus reste confidentiel lorsque cela est nécessaire, et connu et accessible à ceux qui en ont besoin??",
+                    "answer_options": [
+                        {"text": "A. Disponibilité", "rationale": "La disponibilité garantit l'accès, mais pas la confidentialité.", "is_correct": false},
+                        {"text": "B. Accessibilité et sécurité", "rationale": "L'accessibilité et la sécurité sont les attributs de l'information qui garantissent que le processus reste confidentiel lorsque cela est nécessaire, et connu et accessible à ceux qui en ont besoin.", "is_correct": true},
+                        {"text": "C. Intégrité", "rationale": "L'intégrité garantit l'exactitude et l'exhaustivité des données.", "is_correct": false},
+                        {"text": "D. Sécurité", "rationale": "La sécurité est un aspect de l'accessibilité et de la sécurité, mais 'accessibilité et sécurité' est le terme plus complet.", "is_correct": false}
+                    ],
+                    "hint": "Cet objectif est un équilibre entre la protection et l'accès autorisé à l'information."
+                },
+                {
+                    "question": "Comment s'appelle la catégorie d'information si elle correspond à l'objectif de qualité de l'information en accès restreint?",
+                    "answer_options": [
+                        {"text": "A. Conforme", "rationale": "La conformité est liée au respect des règles, pas à l'accès restreint.", "is_correct": false},
+                        {"text": "B. Confidentiel", "rationale": "La catégorie d'information 'Confidentiel' correspond à l'objectif de qualité de l'information en accès restreint, car elle implique que l'information est protégée contre la divulgation non autorisée.", "is_correct": true},
+                        {"text": "C. Crédibilité", "rationale": "La crédibilité est liée à la fiabilité de l'information.", "is_correct": false},
+                        {"text": "D. Efficace", "rationale": "L'efficacité est liée à la pertinence et à la capacité de l'information à répondre aux besoins.", "is_correct": false}
+                    ],
+                    "hint": "Pensez au niveau de sensibilité de l'information."
+                },
+                {
+                    "question": "Que mesure un indicateur de décalage ?",
+                    "answer_options": [
+                        {"text": "A. Si le cycle de vie de l'activateur est géré", "rationale": "Ceci est mesuré par des indicateurs de performance (KPI).", "is_correct": false},
+                        {"text": "B. Si les besoins des parties prenantes sont satisfaits", "rationale": "Ceci est mesuré par des indicateurs de résultat (KGI).", "is_correct": false},
+                        {"text": "C. la gouvernance est gérée", "rationale": "La gestion de la gouvernance est un processus plus large.", "is_correct": false},
+                        {"text": "D. Si les bonnes pratiques sont appliquées", "rationale": "Un indicateur de décalage (lag indicator) mesure les résultats passés, c'est-à-dire si les bonnes pratiques ont été appliquées et ont produit les effets escomptés.", "is_correct": true}
+                    ],
+                    "hint": "Ces indicateurs sont des mesures des résultats passés, souvent difficiles à influencer directement."
+                },
+                {
+                    "question": "Quelle pratique ne contribuerait pas à encourager le comportement souhaité dans une entreprise ?",
+                    "answer_options": [
+                        {"text": "A. Introduction d'un système de bonus", "rationale": "Un système de bonus peut encourager le comportement souhaité.", "is_correct": false},
+                        {"text": "B. Nommer les champions d'affaire", "rationale": "Nommer des champions d'affaires peut encourager le comportement souhaité en fournissant des modèles et des soutiens.", "is_correct": false},
+                        {"text": "C. Publication des procédures d'escalade", "rationale": "La publication des procédures d'escalade ne contribue pas directement à encourager le comportement souhaité; elle définit plutôt un mécanisme de résolution des problèmes, ce qui est une bonne pratique mais pas un levier de motivation comportementale.", "is_correct": true},
+                        {"text": "D. Communiquer sur l'application des pratiques", "rationale": "La communication claire des pratiques et de leur application encourage la conformité et le comportement souhaité.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à ce qui ne motive pas directement ou n'influence pas le comportement des employés."
+                },
+                {
+                    "question": "Le cadre COBIT 5 fournit à ses parties prenantes les conseils les plus complets et les plus à jour sur la gouvernance et la gestion de l'informatique d'entreprise (Plusieurs réponses) :",
+                    "answer_options": [
+                        {"text": "A. Garder les autres cadres ISACA séparés", "rationale": "COBIT 5 est conçu pour être intégré et complémentaire aux autres cadres, pas pour les garder séparés.", "is_correct": false},
+                        {"text": "B. Fournir une base de référence solide et complète de bonnes pratiques", "rationale": "COBIT 5 fournit une base de référence solide et complète de bonnes pratiques pour la gouvernance et la gestion de l'informatique d'entreprise.", "is_correct": true},
+                        {"text": "C. Utilisation obligatoire d'autres normes", "rationale": "L'utilisation d'autres normes n'est pas obligatoire, mais COBIT 5 est compatible avec elles.", "is_correct": false},
+                        {"text": "D. Définir un ensemble de catalyseurs de gouvernance et de gestion", "rationale": "COBIT 5 définit un ensemble de catalyseurs (facilitateurs) qui sont essentiels pour la gouvernance et la gestion de l'informatique d'entreprise.", "is_correct": true}
+                    ],
+                    "hint": "Pensez aux caractéristiques fondamentales de COBIT 5 en tant que cadre."
+                },
+                {
+                    "question": "La transparence financière concerne principalement :",
+                    "answer_options": [
+                        {"text": "A. Objectif de gouvernance en matière de concrétisation des avantages", "rationale": "La concrétisation des avantages est un objectif de gouvernance, mais la transparence financière est plus large.", "is_correct": false},
+                        {"text": "B. Optimisation des risques", "rationale": "L'optimisation des risques est un objectif de gouvernance, mais pas le principal focus de la transparence financière.", "is_correct": false},
+                        {"text": "C. Optimisation des ressources", "rationale": "L'optimisation des ressources est un objectif de gouvernance, mais pas le principal focus de la transparence financière.", "is_correct": false},
+                        {"text": "D. Tout ce qui précède", "rationale": "La transparence financière est essentielle pour tous les objectifs de gouvernance, y compris la concrétisation des avantages, l'optimisation des risques et l'optimisation des ressources, car elle permet aux parties prenantes d'avoir une vue claire de la performance financière et des investissements.", "is_correct": true}
+                    ],
+                    "hint": "La transparence financière est un pilier de la bonne gouvernance dans tous les domaines."
+                },
+                {
+                    "question": "Quelles dimensions de COBIT5 traitent spécifiquement des bonnes pratiques?",
+                    "answer_options": [
+                        {"text": "A. La dimension capacité", "rationale": "La dimension capacité évalue la maturité des processus, mais ne traite pas spécifiquement des bonnes pratiques en soi.", "is_correct": false},
+                        {"text": "B. La dimension processus", "rationale": "La dimension processus de COBIT 5 décrit les processus de gouvernance et de gestion, qui sont basés sur les bonnes pratiques.", "is_correct": true},
+                        {"text": "C. La dimension habilitante", "rationale": "La dimension habilitante (facilitateur) concerne les éléments qui permettent la gouvernance, y compris les bonnes pratiques, mais la dimension processus est plus directe.", "is_correct": false},
+                        {"text": "C. tout ce qui précède", "rationale": "Seule la dimension processus traite spécifiquement des bonnes pratiques.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la partie de COBIT qui décrit les activités et les méthodes."
+                },
+                {
+                    "question": "Quelle exigence décrit la qualité contextuelle dans la dimension Goals Enabler?",
+                    "answer_options": [
+                        {"text": "A. Les résultats doivent être actuelles et appropriée", "rationale": "La qualité contextuelle signifie que les résultats (informations) doivent être pertinents et appropriés au contexte spécifique dans lequel ils sont utilisés.", "is_correct": true},
+                        {"text": "B. Pérenniser l'entreprise", "rationale": "Pérenniser l'entreprise est un objectif d'entreprise, pas une exigence de qualité contextuelle de l'information.", "is_correct": false},
+                        {"text": "C. Utiliser les ressources informatiques de la manière la plus efficace et efficiente", "rationale": "Ceci est lié à l'optimisation des ressources, pas à la qualité contextuelle de l'information.", "is_correct": false},
+                        {"text": "C. Relatif à l'information et aux technologies connexes", "rationale": "Ceci est une description générale de l'information, pas une exigence de qualité contextuelle.", "is_correct": false}
+                    ],
+                    "hint": "La qualité contextuelle est liée à l'adéquation de l'information à son usage."
+                },
+                {
+                    "question": "Quel élément décrit un élément clé d'un système de gouvernance?",
+                    "answer_options": [
+                        {"text": "A. Définir le cadre de gouvernance", "rationale": "Définir le cadre de gouvernance est un élément clé d'un système de gouvernance, car il établit la structure et les principes pour la prise de décision et la supervision.", "is_correct": true},
+                        {"text": "B. Identifier les responsabilités en matière de gouvernance", "rationale": "L'identification des responsabilités est une partie de la définition du cadre.", "is_correct": false},
+                        {"text": "C. Conformité aux politiques internes", "rationale": "La conformité aux politiques internes est un résultat de la gouvernance, pas un élément clé du système lui-même.", "is_correct": false},
+                        {"text": "C. Risques commerciaux maitrisés", "rationale": "Les risques commerciaux maîtrisés sont un objectif de gouvernance, pas un élément clé du système lui-même.", "is_correct": false}
+                    ],
+                    "hint": "C'est la fondation sur laquelle repose toute la structure de gouvernance."
+                },
+                {
+                    "question": "Lesquels des catégories suivantes de catalyseurs sont dans le COBIT5 Q(1 ou plusieurs réponses possibles)?",
+                    "answer_options": [
+                        {"text": "A. Processus", "rationale": "Les processus sont un facilitateur de COBIT 5.", "is_correct": true},
+                        {"text": "B. Personnes", "rationale": "Les personnes (ou Personnes, Compétences et Expertise) sont un facilitateur de COBIT 5.", "is_correct": true},
+                        {"text": "C. Principes et politiques", "rationale": "Les principes et politiques (ou Principes, Politiques et Cadres) sont un facilitateur de COBIT 5.", "is_correct": true},
+                        {"text": "D. Structures organisationnelles", "rationale": "Les structures organisationnelles sont un facilitateur de COBIT 5.", "is_correct": true},
+                        {"text": "E. Aptitudes et compétences", "rationale": "Les aptitudes et compétences (faisant partie de Personnes, Compétences et Expertise) sont un facilitateur de COBIT 5.", "is_correct": true},
+                        {"text": "F. Données", "rationale": "Les données (faisant partie de l'Information) sont un facilitateur de COBIT 5.", "is_correct": true},
+                        {"text": "G. Parties prenantes", "rationale": "Les parties prenantes sont des entités, pas un facilitateur de COBIT 5.", "is_correct": false},
+                        {"text": "H. Culture et comportement", "rationale": "La culture et le comportement (ou Culture, Éthique et Comportement) sont un facilitateur de COBIT 5.", "is_correct": true},
+                        {"text": "I. Capacité des services", "rationale": "La capacité des services (faisant partie de Services, Infrastructure et Applications) est un facilitateur de COBIT 5.", "is_correct": true},
+                        {"text": "J. Information", "rationale": "L'information est un facilitateur de COBIT 5.", "is_correct": true}
+                    ],
+                    "hint": "Rappelez-vous les 7 facilitateurs (enablers) de COBIT 5."
+                }
+            ]
+        };
+
+        // Fonction pour afficher une question spécifique
+        function displayQuestion(index) {
+            if (index >= 0 && index < questions.length) {
+                const question = questions[index];
+                const questionHtml = `
+                    <div class="question-card" id="question-card-${index}">
+                        <h5>${index + 1}. ${question.question}</h5>
+                        <div class="options-container">
+                            ${question.answer_options.map((option, optionIndex) => `
+                                <div class="form-check answer-option" data-is-correct="${option.is_correct}">
+                                    <input class="form-check-input" type="radio" name="currentQuestion" id="question${index}-option${optionIndex}" value="${optionIndex}" ${userAnswers[index] !== null && userAnswers[index].selectedOptionIndex === optionIndex ? 'checked' : ''} ${userAnswers[index] !== null ? 'disabled' : ''}>
+                                    <label class="form-check-label" for="question${index}-option${optionIndex}">
+                                        ${option.text}
+                                    </label>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button class="btn btn-info btn-sm btn-toggle-info mt-3" data-target="hint-${index}">
+                            <i class="fas fa-lightbulb me-2"></i> Afficher l'indice
+                        </button>
+                        <div id="hint-${index}" class="hint">
+                            <strong>Indice :</strong> ${question.hint}
+                        </div>
+                        <button class="btn btn-secondary btn-sm ms-2 btn-toggle-info mt-3" data-target="rationale-${index}">
+                            <i class="fas fa-info-circle me-2"></i> Afficher l'explication
+                        </button>
+                        <div id="rationale-${index}" class="rationale">
+                            <strong>Explication détaillée :</strong>
+                            <ul>
+                                ${question.answer_options.map(option => `
+                                    <li>
+                                        <strong>${option.text} :</strong> ${option.rationale} ${option.is_correct ? '<i class="fas fa-check-circle text-success ms-2"></i>' : '<i class="fas fa-times-circle text-danger ms-2"></i>'}
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                quizDisplayDiv.innerHTML = questionHtml; // Replace content with current question
+                updateNavigationButtons();
+                addCurrentQuestionEventListeners(); // Add listeners for the newly rendered question
+
+                // If question was already answered, show feedback and rationale
+                if (userAnswers[index] !== null) {
+                    applyFeedback(index, userAnswers[index].selectedOptionIndex, userAnswers[index].isCorrect);
+                    const rationaleDiv = document.getElementById(`rationale-${index}`);
+                    if (rationaleDiv) rationaleDiv.classList.add('show-info');
+                    // Update rationale button text
+                    const rationaleBtn = quizDisplayDiv.querySelector('button[data-target^="rationale-"]');
+                    if (rationaleBtn) rationaleBtn.innerHTML = rationaleBtn.innerHTML.replace('Afficher', 'Masquer');
+                }
+            }
+        }
+
+        // Function to update navigation button states, score display, and progress bar
+        function updateNavigationButtons() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = userAnswers[currentQuestionIndex] === null || currentQuestionIndex === questions.length - 1;
+            
+            // Update score display
+            const answeredCount = userAnswers.filter(answer => answer !== null).length;
+            currentScoreDisplay.textContent = `Score: ${score} / ${answeredCount}`;
+            questionCountDisplay.textContent = `Question: ${currentQuestionIndex + 1} / ${questions.length}`;
+
+            // Update progress bar
+            const progressPercentage = ((currentQuestionIndex + 1) / questions.length) * 100;
+            questionProgressBar.style.width = `${progressPercentage}%`;
+            questionProgressBar.setAttribute('aria-valuenow', progressPercentage);
+        }
+
+        // Function to apply visual feedback to options
+        function applyFeedback(questionIndex, selectedOptionIndex, isCorrect) {
+            const optionsContainer = quizDisplayDiv.querySelector('.options-container');
+            if (!optionsContainer) return;
+
+            optionsContainer.querySelectorAll('.answer-option').forEach((optionElement, idx) => {
+                optionElement.classList.remove('correct', 'incorrect'); // Clear previous feedback
+
+                // Highlight correct answer
+                if (questions[questionIndex].answer_options[idx].is_correct) {
+                    optionElement.classList.add('correct');
+                }
+                // Highlight selected incorrect answer
+                if (idx === selectedOptionIndex && !isCorrect) {
+                    optionElement.classList.add('incorrect');
+                }
+            });
+        }
+
+        // Function to add event listeners for the currently displayed question
+        function addCurrentQuestionEventListeners() {
+            const currentQuestionCard = document.getElementById(`question-card-${currentQuestionIndex}`);
+            const optionsContainer = currentQuestionCard.querySelector('.options-container');
+
+            // Event listener for selecting an answer option (this acts as submission)
+            optionsContainer.addEventListener('change', function(event) {
+                if (event.target.type === 'radio') {
+                    const selectedOption = event.target;
+                    const selectedOptionIndex = parseInt(selectedOption.value);
+                    const isCorrect = questions[currentQuestionIndex].answer_options[selectedOptionIndex].is_correct;
+                    
+                    // If not already answered, update score and userAnswers
+                    if (userAnswers[currentQuestionIndex] === null) {
+                        if (isCorrect) {
+                            score++;
+                        }
+                        userAnswers[currentQuestionIndex] = {
+                            selectedOptionIndex: selectedOptionIndex,
+                            isCorrect: isCorrect
+                        };
+                    }
+
+                    // Disable all radio buttons for the current question
+                    optionsContainer.querySelectorAll('input[type="radio"]').forEach(radio => {
+                        radio.disabled = true;
+                    });
+
+                    applyFeedback(currentQuestionIndex, selectedOptionIndex, isCorrect);
+
+                    // Show rationale
+                    const rationaleDiv = document.getElementById(`rationale-${currentQuestionIndex}`);
+                    if (rationaleDiv) rationaleDiv.classList.add('show-info');
+                    
+                    // Update rationale button text
+                    const rationaleBtn = quizDisplayDiv.querySelector('button[data-target^="rationale-"]');
+                    if (rationaleBtn) rationaleBtn.innerHTML = rationaleBtn.innerHTML.replace('Afficher', 'Masquer');
+
+                    updateNavigationButtons(); // Update score and enable next button
+                }
+            });
+
+            // Event listeners for hint and rationale buttons
+            document.querySelectorAll('.btn-toggle-info').forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetId = this.dataset.target;
+                    const targetElement = document.getElementById(targetId);
+                    targetElement.classList.toggle('show-info');
+                    
+                    // Changer le texte du bouton
+                    if (targetElement.classList.contains('show-info')) {
+                        this.innerHTML = this.innerHTML.replace('Afficher', 'Masquer');
+                    } else {
+                        this.innerHTML = this.innerHTML.replace('Masquer', 'Afficher');
+                    }
+                });
+            });
+        }
+
+        // Navigation functions
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion(currentQuestionIndex);
+            } else {
+                // End of quiz, show results modal
+                displayResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion(currentQuestionIndex);
+            }
+        }
+
+        // Function to display quiz results in a modal
+        function displayResults() {
+            quizNavigationDiv.style.display = 'none'; // Hide navigation buttons
+
+            const percentage = (score / questions.length) * 100;
+            let recommendationsHtml = '';
+            let scoreColor = '';
+
+            if (percentage >= 80) {
+                scoreColor = '#28a745'; // Green
+                recommendationsHtml = `
+                    <h4>Félicitations !</h4>
+                    <p>Votre score de ${percentage.toFixed(2)}% est excellent. Vous avez une très bonne maîtrise des concepts COBIT 5.</p>
+                    <ul>
+                        <li>Continuez à réviser les domaines où vous avez eu quelques difficultés.</li>
+                        <li>Pensez à pratiquer avec des examens blancs pour vous familiariser avec le format et la gestion du temps.</li>
+                        <li>Explorez les guides de mise en œuvre avancés de COBIT pour approfondir vos connaissances.</li>
+                    </ul>
+                `;
+            } else {
+                scoreColor = '#dc3545'; // Red
+                recommendationsHtml = `
+                    <h4>Axes d'amélioration</h4>
+                    <p>Votre score de ${percentage.toFixed(2)}% indique que des révisions supplémentaires sont nécessaires pour maîtriser pleinement les concepts COBIT 5.</p>
+                    <ul>
+                        <li>Concentrez-vous sur les questions que vous avez manquées et comprenez bien les explications détaillées.</li>
+                        <li>Revoyez les principes, facilitateurs et domaines de processus de COBIT 5.</li>
+                        <li>Utilisez les ressources officielles d'ISACA et les manuels de formation pour renforcer vos connaissances.</li>
+                        <li>N'hésitez pas à refaire ce quiz plusieurs fois pour consolider votre apprentissage.</li>
+                    </ul>
+                `;
+            }
+
+            // Populate modal content
+            finalScoreCorrectSpan.textContent = score;
+            finalScoreTotalSpan.textContent = questions.length;
+            finalScorePercentage.textContent = `${percentage.toFixed(2)}%`;
+            finalScorePercentage.style.color = scoreColor;
+            finalRecommendationsDiv.innerHTML = recommendationsHtml;
+
+            // Show the modal
+            resultsModal.show();
+        }
+
+        // Function to restart the quiz
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = new Array(questions.length).fill(null); // Reset user answers
+            quizNavigationDiv.style.display = 'flex'; // Show navigation buttons
+            resultsModal.hide(); // Hide the modal
+            displayQuestion(currentQuestionIndex); // Start from the first question
+        }
+
+        // Attach navigation button handlers
+        nextBtn.addEventListener('click', nextQuestion);
+        prevBtn.addEventListener('click', previousQuestion);
+        restartQuizBtnModal.addEventListener('click', restartQuiz); // Attach restart to modal button
+
+        // Initial load of the quiz
+        document.addEventListener('DOMContentLoaded', () => {
+            // Hide spinner
+            loadingSpinner.style.display = 'none'; 
+            questions = quizData.questions; // Assign loaded data
+            displayQuestion(currentQuestionIndex); // Display the first question
+        });
+    </script>
+</body>
+</html>

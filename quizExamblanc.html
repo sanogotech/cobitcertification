@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Certification COBIT 5 (Mode Apprentissage)</title>
+    <!-- Lien vers Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Lien vers Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Styles CSS personnalisés pour le quiz COBIT 5 */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e8f0f7; /* Un fond bleu clair doux */
+            color: #2c3e50; /* Couleur de texte principale */
+            padding-top: 30px;
+            padding-bottom: 30px;
+        }
+        .quiz-container {
+            max-width: 950px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.18); /* Ombre plus prononcée et élégante */
+            animation: fadeIn 1s ease-out; /* Animation d'apparition */
+        }
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #3498db; /* Bleu secondaire de Bootstrap */
+            font-weight: 700;
+            font-size: 2.8rem;
+            position: relative;
+            padding-bottom: 18px;
+        }
+        .quiz-header::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 5px;
+            background-color: #2c3e50; /* Couleur primaire */
+            border-radius: 3px;
+        }
+
+        .score-progress-container {
+            display: flex;
+            flex-direction: column; /* Stack score and progress vertically */
+            margin-bottom: 25px;
+            padding: 15px 25px;
+            background-color: #f0f8ff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .score-display, .question-progress-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 10px; /* Space between score and question count */
+        }
+        .question-progress-display {
+            margin-bottom: 0; /* No margin below the last item in the container */
+        }
+        .progress {
+            height: 15px;
+            border-radius: 10px;
+            background-color: #e9ecef;
+            flex-grow: 1;
+            margin-left: 20px; /* Space between question count and progress bar */
+        }
+        .progress-bar {
+            background-color: #3498db;
+            border-radius: 10px;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .question-card {
+            margin-bottom: 35px;
+            border: none; /* Supprimer la bordure par défaut */
+            border-radius: 12px;
+            padding: 30px;
+            background-color: #fefefe;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1); /* Ombre légère pour chaque carte */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .question-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .question-card h5 {
+            margin-bottom: 25px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 1.4rem;
+            line-height: 1.5;
+        }
+        .answer-option {
+            margin-bottom: 15px;
+            padding: 15px 20px;
+            border: 1px solid #d0d9e2;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            background-color: #f8fbfd;
+        }
+        .answer-option:hover {
+            background-color: #eef7ff; /* Bleu très clair au survol */
+            border-color: #9ac7ed;
+        }
+        .answer-option input[type="radio"] {
+            margin-right: 18px;
+            transform: scale(1.3); /* Agrandir les radios boutons */
+            cursor: pointer;
+        }
+        .answer-option label {
+            cursor: pointer;
+            flex-grow: 1; /* Permet au label de prendre l'espace restant */
+        }
+
+        /* Styles pour les retours (correct/incorrect) en mode apprentissage */
+        .answer-option.correct {
+            background-color: #d4edda; /* Vert clair */
+            border-color: #28a745; /* Vert foncé */
+            font-weight: bold;
+            color: #155724;
+            animation: pulseGreen 0.5s ease-out;
+        }
+        .answer-option.incorrect {
+            background-color: #f8d7da; /* Rouge clair */
+            border-color: #dc3545; /* Rouge foncé */
+            font-weight: bold;
+            color: #721c24;
+            animation: shakeRed 0.5s ease-out;
+        }
+        .rationale {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #e9eff5; /* Gris bleu clair */
+            border-left: 6px solid #607d8b; /* Gris ardoise */
+            border-radius: 8px;
+            font-size: 1em;
+            color: #455a64;
+            display: none; /* Masqué par défaut */
+            animation: slideInUp 0.4s ease-out;
+        }
+        .rationale ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+        .rationale li {
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        .rationale li:last-child {
+            margin-bottom: 0;
+        }
+
+        .hint {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff8e1; /* Jaune très clair */
+            border-left: 6px solid #ffb300; /* Jaune orangé */
+            border-radius: 8px;
+            font-size: 0.95em;
+            color: #a1887f;
+            display: none; /* Masqué par défaut */
+            animation: slideInUp 0.4s ease-out;
+        }
+        .show-info {
+            display: block;
+        }
+        .btn-toggle-info {
+            margin-top: 20px;
+            font-size: 0.95em;
+            padding: 10px 20px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .btn-toggle-info:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Styles pour le pop-up de résultats (modal) */
+        .results-modal .modal-content {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 20px;
+            text-align: center;
+        }
+        .results-modal .modal-header {
+            border-bottom: none;
+            padding-bottom: 0;
+            justify-content: center;
+        }
+        .results-modal .modal-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .results-modal .modal-body {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        .results-modal .score-text {
+            font-size: 1.8rem;
+            color: #495057;
+            margin-bottom: 15px;
+        }
+        .results-modal .score-percentage {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        .results-modal .recommendations {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #e9eff5;
+            border-radius: 10px;
+            border-left: 6px solid #3498db;
+            text-align: left;
+        }
+        .results-modal .recommendations h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        .results-modal .recommendations ul {
+            list-style-type: disc;
+            padding-left: 25px;
+        }
+        .results-modal .recommendations li {
+            margin-bottom: 8px;
+            color: #495057;
+        }
+        .results-modal .modal-footer {
+            border-top: none;
+            padding-top: 0;
+            justify-content: center;
+        }
+        .results-modal #restart-quiz-btn-modal {
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+        }
+
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulseGreen {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.005); }
+            100% { transform: scale(1); }
+        }
+        @keyframes shakeRed {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container quiz-container">
+        <h2 class="quiz-header">Quiz de Certification COBIT 5</h2>
+        <p class="text-center text-muted mb-5">Testez vos connaissances sur les principes, facilitateurs et processus de COBIT 5. Chaque question offre un indice et une explication détaillée.</p>
+
+        <div class="score-progress-container">
+            <div class="score-display">
+                <span id="current-score-display">Score: 0 / 0</span>
+            </div>
+            <div class="question-progress-display">
+                <span id="question-count-display">Question: 1 / 50</span>
+                <div class="progress">
+                    <div id="question-progress-bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="quiz-display">
+            <!-- La question actuelle sera chargée dynamiquement ici par JavaScript -->
+            <div class="text-center my-5" id="loading-spinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Chargement des questions...</span>
+                </div>
+                <p class="mt-2 text-muted">Chargement des questions du quiz...</p>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4" id="quiz-navigation">
+            <button id="prev-btn" class="btn btn-primary" disabled>
+                <i class="fas fa-arrow-left me-2"></i> Précédent
+            </button>
+            <button id="next-btn" class="btn btn-primary" disabled>
+                Suivant <i class="fas fa-arrow-right ms-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal pour les résultats du quiz -->
+    <div class="modal fade results-modal" id="resultsModal" tabindex="-1" aria-labelledby="resultsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resultsModalLabel">Résultats du Quiz</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="score-text">Vous avez répondu correctement à <span id="final-score-correct">0</span> questions sur <span id="final-score-total">0</span>.</p>
+                    <p class="score-percentage" id="final-score-percentage" style="color: #28a745;">0%</p>
+                    <div class="recommendations" id="final-recommendations">
+                        <!-- Recommandations seront insérées ici -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="restart-quiz-btn-modal">
+                        <i class="fas fa-redo me-2"></i> Recommencer le quiz
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lien vers Bootstrap JS Bundle (inclut Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const quizDisplayDiv = document.getElementById('quiz-display');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const quizNavigationDiv = document.getElementById('quiz-navigation');
+        const currentScoreDisplay = document.getElementById('current-score-display');
+        const questionCountDisplay = document.getElementById('question-count-display');
+        const questionProgressBar = document.getElementById('question-progress-bar');
+
+        // Modal elements
+        const resultsModal = new bootstrap.Modal(document.getElementById('resultsModal'));
+        const finalScoreCorrectSpan = document.getElementById('final-score-correct');
+        const finalScoreTotalSpan = document.getElementById('final-score-total');
+        const finalScorePercentage = document.getElementById('final-score-percentage');
+        const finalRecommendationsDiv = document.getElementById('final-recommendations');
+        const restartQuizBtnModal = document.getElementById('restart-quiz-btn-modal');
+
+        let currentQuestionIndex = 0;
+        let questions = []; // This will hold the parsed quiz data
+        let score = 0;
+        // Store answers to prevent re-scoring and re-enabling radio buttons
+        let userAnswers = new Array(50).fill(null); // null: not answered, {selectedOptionIndex: int, isCorrect: bool}: answered
+
+        // Données du quiz COBIT 5 (50 questions)
+        const quizData = {
+            "title": "Quiz de Certification COBIT 5 (Mode Apprentissage)",
+            "questions": [
+                {
+                    "question": "Quelle question est-il pertinent de se poser lorsqu'il s'agit de déterminer comment gérer les performances du facilitateur ?",
+                    "answer_options": [
+                        {"text": "Les bonnes pratiques sont-elles appliquées ?", "rationale": "Cette question aborde directement l'aspect de la gestion de la performance au sein du facilitateur, en s'alignant sur les bonnes pratiques.", "is_correct": true},
+                        {"text": "La sécurité est-elle assurée ?", "rationale": "Cette question est liée à la sécurité de l'information, un aspect important mais pas le focus principal de la gestion de la performance du facilitateur.", "is_correct": false},
+                        {"text": "Les opérations sont-elles efficaces?", "rationale": "L'efficacité des opérations est un objectif, mais la question se concentre sur la 'gestion des performances' du facilitateur.", "is_correct": false},
+                        {"text": "Les performances sont-elles contrôlées ?", "rationale": "Bien que le contrôle des performances soit pertinent, la question 'Les bonnes pratiques sont-elles appliquées ?' est plus englobante dans le contexte de la gestion des facilitateurs.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à l'alignement avec les standards et les méthodes reconnues."
+                },
+                {
+                    "question": "Quel type d'objectif de processus est conforme aux règles externes ?",
+                    "answer_options": [
+                        {"text": "Intrinsèque", "rationale": "La qualité intrinsèque fait référence à l'exactitude et à l'objectivité de l'information, ce qui est fondamental pour la conformité aux règles externes.", "is_correct": true},
+                        {"text": "D'affaires", "rationale": "Les objectifs d'affaires sont des buts globaux de l'entreprise, pas un type d'objectif de processus spécifiquement lié aux règles externes.", "is_correct": false},
+                        {"text": "Contextuel", "rationale": "La qualité contextuelle concerne la pertinence et l'exhaustivité de l'information dans un contexte donné, mais pas directement la conformité aux règles externes.", "is_correct": false},
+                        {"text": "Accessibilité et sécurité", "rationale": "L'accessibilité et la sécurité sont des attributs de l'information, mais pas un type d'objectif de processus lié à la conformité externe.", "is_correct": false}
+                    ],
+                    "hint": "Ce type d'objectif est lié à la qualité fondamentale de l'information elle-même."
+                },
+                {
+                    "question": "Comment s'appelle la phase de gestion du programme au sein du cycle de vie de la mise en œuvre lorsque des solutions pratiques sont soutenues par des dossiers d'affaires justifiables ?",
+                    "answer_options": [
+                        {"text": "Créer des améliorations", "rationale": "Cette phase est axée sur la mise en œuvre des solutions, pas sur la justification initiale.", "is_correct": false},
+                        {"text": "Définir la feuille de route", "rationale": "La définition de la feuille de route est une étape de planification, mais pas la phase où les dossiers d'affaires sont justifiés.", "is_correct": false},
+                        {"text": "Planifier le programme", "rationale": "La planification du programme implique l'élaboration de plans détaillés et de dossiers d'affaires justifiables pour les solutions proposées.", "is_correct": true},
+                        {"text": "Lancer le programme", "rationale": "Le lancement du programme est le début de l'exécution, après la justification.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à l'étape où les investissements sont validés."
+                },
+                {
+                    "question": "Quelle composante du cycle de vie de la mise en œuvre aborde les aspects comportementaux et culturels de la mise en œuvre ?",
+                    "answer_options": [
+                        {"text": "Gestion du programme", "rationale": "La gestion du programme est plus axée sur la coordination des projets.", "is_correct": false},
+                        {"text": "Moteur du changement", "rationale": "La phase 'Moteur du changement' (ou 'Change Enablement') se concentre sur la gestion des aspects humains et culturels de la mise en œuvre des changements.", "is_correct": true},
+                        {"text": "Approche d'amélioration continue", "rationale": "L'amélioration continue est un processus continu, pas une phase spécifique du cycle de vie axée sur le comportement.", "is_correct": false},
+                        {"text": "Définition de la feuille de route", "rationale": "La définition de la feuille de route est une activité de planification.", "is_correct": false}
+                    ],
+                    "hint": "Cette composante est essentielle pour l'acceptation et l'adoption des changements par les personnes."
+                },
+                {
+                    "question": "Quel est le nom donné à un mécanisme de communication d'entreprise concernant les valeurs d'entreprise et le comportement désiré ?",
+                    "answer_options": [
+                        {"text": "Résultats du processus", "rationale": "Les résultats du processus sont les extrants des activités, pas un mécanisme de communication de valeurs.", "is_correct": false},
+                        {"text": "Structures organisationnelles", "rationale": "Les structures organisationnelles définissent les rôles et les hiérarchies, pas les valeurs directement.", "is_correct": false},
+                        {"text": "Principes et politiques", "rationale": "Les principes et les politiques sont des facilitateurs clés qui communiquent les valeurs et les comportements souhaités au sein d'une organisation.", "is_correct": true},
+                        {"text": "Règles et normes", "rationale": "Les règles et normes sont plus spécifiques et découlent des principes et politiques.", "is_correct": false}
+                    ],
+                    "hint": "Ces éléments sont les fondations qui guident les actions et les décisions."
+                },
+                {
+                    "question": "Quelle exigence décrit la 'qualité contextuelle' dans la dimension de facilitateur des objectifs ?",
+                    "answer_options": [
+                        {"text": "Les résultats doivent être pertinents et complets", "rationale": "La qualité contextuelle fait référence à la pertinence et à l'exhaustivité de l'information dans un contexte spécifique.", "is_correct": true},
+                        {"text": "Les facilitateurs sont disponibles au besoin, et au moment opportun", "rationale": "Ceci est lié à la disponibilité de l'information.", "is_correct": false},
+                        {"text": "Les facilitateurs offrent des résultats précis, objectifs et fiables", "rationale": "Ceci est lié à la qualité intrinsèque de l'information.", "is_correct": false},
+                        {"text": "Les résultats sont sécurisés", "rationale": "Ceci est lié à la sécurité de l'information.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à l'adéquation de l'information à l'usage spécifique."
+                },
+                {
+                    "question": "Quel énoncé est correct au sujet des trois guides COBIT (Modèle d'évaluation des processus, Guide de l'évaluateur, Guide d'auto-évaluation) ?",
+                    "answer_options": [
+                        {"text": "Le Modèle d'évaluation des processus (MEP) est évalué par le Guide de l'évaluateur", "rationale": "Le MEP est un modèle, pas quelque chose qui est 'évalué' par le guide.", "is_correct": false},
+                        {"text": "Le Modèle d'évaluation du programme n'a AUCUNE valeur sans le Guide de l'évaluateur", "rationale": "Cette affirmation est trop forte et potentiellement fausse.", "is_correct": false},
+                        {"text": "Le Guide d'auto-évaluation est identique au Guide de l'évaluateur, mais est utilisé en interne au sein d'une organisation", "rationale": "Ils ne sont pas identiques, le guide d'auto-évaluation est une version simplifiée.", "is_correct": false},
+                        {"text": "Le Guide d'auto-évaluation peut être utilisé pour préparer une Évaluation de capacité des processus formelle", "rationale": "Le Guide d'auto-évaluation est conçu pour aider les organisations à effectuer une auto-évaluation préliminaire et à se préparer à une évaluation formelle de la capacité des processus.", "is_correct": true}
+                    ],
+                    "hint": "Pensez à l'objectif du guide d'auto-évaluation par rapport à une évaluation externe."
+                },
+                {
+                    "question": "Quel élément est une composante clé de l'Approche de gouvernance COBIT 5 ?",
+                    "answer_options": [
+                        {"text": "Transparence pour les parties prenantes", "rationale": "La transparence est un principe important, mais pas une composante directe de l'approche de gouvernance.", "is_correct": false},
+                        {"text": "Évaluer, diriger et surveiller", "rationale": "C'est le domaine de la gouvernance, mais la question porte sur une composante clé de l'approche de gouvernance.", "is_correct": false},
+                        {"text": "Planifier, créer, exécuter et surveiller", "rationale": "C'est le domaine de la gestion, pas de la gouvernance.", "is_correct": false},
+                        {"text": "Portée de la gouvernance", "rationale": "La portée de la gouvernance définit ce que le cadre de gouvernance couvre au sein de l'entreprise, c'est une composante fondamentale de l'approche.", "is_correct": true}
+                    ],
+                    "hint": "Cette composante définit les limites et l'étendue de l'application de la gouvernance."
+                },
+                {
+                    "question": "Quelle activité est une bonne pratique de l'application de principes au sein du facilitateur des structures organisationnelles ?",
+                    "answer_options": [
+                        {"text": "Publier à l'avance un calendrier des réunions du conseil d'administration", "rationale": "Publier un calendrier des réunions du conseil d'administration à l'avance favorise la transparence et permet aux parties prenantes de se préparer, ce qui est une bonne pratique liée aux structures organisationnelles.", "is_correct": true},
+                        {"text": "Communiquer les limites des droits de décision de la structure organisationnelle", "rationale": "Ceci est une bonne pratique, mais la question est plus générale sur l'application des principes.", "is_correct": false},
+                        {"text": "Définir la structure de délégation des droits de décision", "rationale": "Ceci est une activité de définition, pas une pratique d'application des principes.", "is_correct": false},
+                        {"text": "Documenter les décisions que la structure est autorisée à prendre", "rationale": "Ceci est une activité de documentation, pas une pratique d'application des principes.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à ce qui favorise la transparence et l'efficacité des organes de décision."
+                },
+                {
+                    "question": "Quel est l'objectif de la Cascade d'objectifs ?",
+                    "answer_options": [
+                        {"text": "Examiner les intrants et les extrants d'un processus Tl au sein de l'entreprise", "rationale": "Ceci est plus lié à l'analyse des processus eux-mêmes.", "is_correct": false},
+                        {"text": "Définir et mettre en œuvre l'Architecture d'entreprise", "rationale": "L'architecture d'entreprise est un facilitateur distinct, bien qu'influencée par les objectifs.", "is_correct": false},
+                        {"text": "Contribuer à assurer un alignement entre les besoins de l'entreprise et les solutions et services TI", "rationale": "La Cascade des Objectifs est un mécanisme clé pour traduire les besoins des parties prenantes en objectifs d'entreprise, puis en objectifs liés aux TI et en objectifs de facilitateurs, assurant ainsi un alignement de bout en bout.", "is_correct": true},
+                        {"text": "Contribuer à la définition de rôles et de responsabilités clairs au sein d'une entreprise", "rationale": "Ceci est lié aux structures organisationnelles et processus, pas l'objectif principal de la cascade.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la manière dont les objectifs stratégiques sont liés aux objectifs opérationnels."
+                },
+                {
+                    "question": "Quel est l'objectif de l'élément politiques au sein du modèle principes, politiques et cadres?",
+                    "answer_options": [
+                        {"text": "Avoir des politiques ouvertes et souples", "rationale": "Les politiques doivent être claires, pas nécessairement ouvertes et souples au point de manquer de direction.", "is_correct": false},
+                        {"text": "Spécifier les conséquences d'une non-conformité", "rationale": "Ceci est une composante des politiques, mais pas leur objectif principal.", "is_correct": false},
+                        {"text": "Fournir des directives détaillées sur la manière de mettre les principes en pratique", "rationale": "Les politiques traduisent les principes généraux en orientations pratiques et détaillées pour la gestion quotidienne.", "is_correct": true},
+                        {"text": "Exprimer les valeurs fondamentales de l'entreprise", "rationale": "Ceci est plus le rôle des principes que des politiques.", "is_correct": false}
+                    ],
+                    "hint": "Les politiques sont le 'comment faire' des principes."
+                },
+                {
+                    "question": "Identifiez $le(s)$ mot(s) qui manque(nt) dans la phrase suivante. [?] du processus est un attribut de processus pour un processus prévisible.",
+                    "answer_options": [
+                        {"text": "L'innovation", "rationale": "L'innovation n'est pas un attribut direct de la prévisibilité d'un processus.", "is_correct": false},
+                        {"text": "La gestion des performances", "rationale": "La gestion des performances est une activité, pas un attribut de processus.", "is_correct": false},
+                        {"text": "L'évaluation", "rationale": "L'évaluation est une activité, pas un attribut de processus.", "is_correct": false},
+                        {"text": "La mesure", "rationale": "La mesure du processus est un attribut clé pour un processus prévisible, car elle permet de suivre et de contrôler sa performance de manière cohérente.", "is_correct": true}
+                    ],
+                    "hint": "Pour qu'un processus soit prévisible, il doit être quantifiable et suivi."
+                },
+                {
+                    "question": "Que produisent les processus suite à leur exécution?",
+                    "answer_options": [
+                        {"text": "Tableaux RACI", "rationale": "Les tableaux RACI sont des outils de définition des rôles, pas des produits de l'exécution des processus.", "is_correct": false},
+                        {"text": "Aspects culturels", "rationale": "Les aspects culturels influencent les processus, mais ne sont pas directement produits par eux.", "is_correct": false},
+                        {"text": "Capacités de services", "rationale": "Les processus, une fois exécutés, produisent des capacités de services, qui sont les extrants permettant d'atteindre les objectifs d'entreprise.", "is_correct": true},
+                        {"text": "Objectifs d'affaires", "rationale": "Les objectifs d'affaires sont des intrants pour la définition des processus, pas des extrants.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à ce que les processus permettent à l'organisation de faire ou de fournir."
+                },
+                {
+                    "question": "Quel domaine de processus convient LE MIEUX aux compétences telles que Gestion de portefeuille ?",
+                    "answer_options": [
+                        {"text": "Surveiller, évaluer et mesurer (SEM)", "rationale": "SEM est axé sur la surveillance et l'évaluation, pas la gestion de portefeuille.", "is_correct": false},
+                        {"text": "Livrer, servir et soutenir (LSS)", "rationale": "LSS concerne les opérations quotidiennes et le support.", "is_correct": false},
+                        {"text": "Bâtir, acquérir et implanter (BAI)", "rationale": "BAI est axé sur la construction et l'acquisition de solutions.", "is_correct": false},
+                        {"text": "Aligner, planifier et organiser (APO)", "rationale": "La gestion de portefeuille est une compétence clé au sein du domaine APO (Aligner, Planifier et Organiser), qui se concentre sur l'alignement stratégique et la planification des ressources.", "is_correct": true}
+                    ],
+                    "hint": "Ce domaine est lié à la stratégie et à la coordination des ressources."
+                },
+                {
+                    "question": "Quel facilitateur traduit le comportement désiré en directives pratiques ?",
+                    "answer_options": [
+                        {"text": "Culture, éthique et comportement", "rationale": "Ce facilitateur influence le comportement, mais ne le 'traduit' pas en directives pratiques.", "is_correct": false},
+                        {"text": "Services, infrastructure et applications", "rationale": "Ces facilitateurs sont des ressources techniques.", "is_correct": false},
+                        {"text": "Principes, politiques et cadres", "rationale": "Les principes, politiques et cadres sont les facilitateurs qui fournissent les règles et les lignes directrices pour le comportement souhaité.", "is_correct": true},
+                        {"text": "Personnes, aptitudes et compétences", "rationale": "Ce facilitateur concerne les ressources humaines.", "is_correct": false}
+                    ],
+                    "hint": "Ces éléments sont les 'règles du jeu' de l'organisation."
+                },
+                {
+                    "question": "Quelle proposition N'est PAS une composante de la phase 3 au sein du Cycle de vie de la mise en œuvre ?",
+                    "answer_options": [
+                        {"text": "Identifier les acteurs", "rationale": "L'identification des acteurs est généralement effectuée dans les phases initiales (Phase 1 ou 2) du cycle de vie de la mise en œuvre, pas dans la Phase 3 ('Où voulons-nous aller ?').", "is_correct": true},
+                        {"text": "Définir l'état cible", "rationale": "La définition de l'état cible est une composante clé de la Phase 3.", "is_correct": false},
+                        {"text": "Communiquer le résultat", "rationale": "La communication est une activité continue, mais 'communiquer le résultat' est plus lié à la fin d'une phase ou à la gestion du changement.", "is_correct": false},
+                        {"text": "Définir la feuille de route", "rationale": "La définition de la feuille de route est une composante clé de la Phase 3.", "is_correct": false}
+                    ],
+                    "hint": "Pensez aux étapes initiales de la planification d'un projet."
+                },
+                {
+                    "question": "Quel rôle est le plus haut responsable de l'entreprise chargé de l'alignement des stratégies TI et d'affaires ?",
+                    "answer_options": [
+                        {"text": "Dirigeant d'entreprise", "rationale": "Un dirigeant d'entreprise a une responsabilité globale, mais pas spécifiquement l'alignement TI-affaires comme rôle principal.", "is_correct": false},
+                        {"text": "Directeur de l'architecture", "rationale": "Le directeur de l'architecture est responsable de l'architecture, pas de l'alignement stratégique global.", "is_correct": false},
+                        {"text": "Dirigeant principale de l'information", "rationale": "Le Dirigeant Principal de l'Information (DSI ou CIO) est généralement le plus haut responsable de l'entreprise chargé de l'alignement des stratégies TI et d'affaires.", "is_correct": true},
+                        {"text": "Directeur de l'exploitation", "rationale": "Le directeur de l'exploitation est axé sur les opérations quotidiennes.", "is_correct": false}
+                    ],
+                    "hint": "C'est le rôle qui fait le pont entre la stratégie métier et la stratégie TI."
+                },
+                {
+                    "question": "Quel facteur influence les besoins des parties prenantes ?",
+                    "answer_options": [
+                        {"text": "Bonnes pratiques", "rationale": "Les bonnes pratiques sont des lignes directrices, pas des facteurs qui influencent les besoins en soi.", "is_correct": false},
+                        {"text": "Qualité contextuelle", "rationale": "La qualité contextuelle est un critère d'information, pas un facteur externe influençant les besoins.", "is_correct": false},
+                        {"text": "Indicateurs de résultats", "rationale": "Les indicateurs de résultats mesurent l'atteinte des objectifs, ils n'influencent pas les besoins initiaux.", "is_correct": false},
+                        {"text": "Environnement réglementaire", "rationale": "L'environnement réglementaire est un facteur externe majeur qui influence directement les besoins et les attentes des parties prenantes en matière de conformité et de gestion des TI.", "is_correct": true}
+                    ],
+                    "hint": "Pensez aux influences externes qui imposent des exigences à l'entreprise."
+                },
+                {
+                    "question": "Quelle proposition est un véhicule important pour l'exécution des politiques?",
+                    "answer_options": [
+                        {"text": "Structures organisationnelles", "rationale": "Les structures organisationnelles définissent les cadres, mais ne sont pas le véhicule direct d'exécution des politiques.", "is_correct": false},
+                        {"text": "Pratiques de processus", "rationale": "Les pratiques de processus sont les activités opérationnelles et les étapes par lesquelles les politiques sont mises en œuvre et exécutées.", "is_correct": true},
+                        {"text": "Référentiel de gouvernance", "rationale": "Le référentiel de gouvernance est un cadre, pas un véhicule d'exécution.", "is_correct": false},
+                        {"text": "Règles et normes", "rationale": "Les règles et normes sont des définitions, mais les pratiques de processus sont la manière dont elles sont appliquées.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la manière dont les directives sont transformées en actions concrètes."
+                },
+                {
+                    "question": "Quel rôle est chargé de surveiller les activités pour atteindre les objectifs d'entreprise au sein de l'approche de gouvernance?",
+                    "answer_options": [
+                        {"text": "Organisme de gouvernance", "rationale": "L'organisme de gouvernance évalue et dirige, mais la surveillance des activités pour atteindre les objectifs est une tâche de gestion.", "is_correct": false},
+                        {"text": "Exploitation", "rationale": "L'exploitation exécute les activités, mais ne les surveille pas pour l'atteinte des objectifs d'entreprise.", "is_correct": false},
+                        {"text": "Parties prenantes", "rationale": "Les parties prenantes ont des besoins et des attentes, mais ne sont pas directement chargées de la surveillance des activités.", "is_correct": false},
+                        {"text": "Gestion", "rationale": "La gestion est responsable de la planification, de la construction, de l'exécution et de la surveillance des activités pour atteindre les objectifs d'entreprise, conformément à l'orientation fixée par l'organisme de gouvernance.", "is_correct": true}
+                    ],
+                    "hint": "Ce rôle est responsable de la mise en œuvre et du suivi des directives de la gouvernance."
+                },
+                {
+                    "question": "Quel terme est employé pour décrire des projets dupliqués pouvant indiquer la nécessité d'améliorer la gouvernance des TI de l'entreprise ?",
+                    "answer_options": [
+                        {"text": "Fusions et acquisitions", "rationale": "Les fusions et acquisitions sont des événements d'entreprise, pas des indicateurs de problèmes de gouvernance.", "is_correct": false},
+                        {"text": "Points sensibles", "rationale": "Les projets dupliqués sont un exemple de 'points sensibles' ou de symptômes qui indiquent des problèmes sous-jacents de gouvernance des TI.", "is_correct": true},
+                        {"text": "Événements déclencheurs", "rationale": "Les événements déclencheurs sont des situations qui initient le besoin de changement, pas les problèmes eux-mêmes.", "is_correct": false},
+                        {"text": "Risque lié aux TI", "rationale": "Le risque lié aux TI est une incertitude, pas une manifestation de duplication de projets.", "is_correct": false}
+                    ],
+                    "hint": "Ces problèmes sont des signaux que quelque chose ne fonctionne pas correctement."
+                },
+                {
+                    "question": "Quel est l'objectif du Modèle de référence des processus ?",
+                    "answer_options": [
+                        {"text": "Constituer la base de la dimension de capacité qui définit la méthode de notation pour se conformer à la norme ISO 15504", "rationale": "Ceci est lié à l'évaluation de la capacité des processus, pas à l'objectif principal du modèle de référence.", "is_correct": false},
+                        {"text": "Constituer la base de la dimension de processus qui décrit la structure des 37 processus COBIT", "rationale": "Le Modèle de référence des processus fournit une vue structurée et une description des 37 processus de COBIT, servant de base à la dimension de processus.", "is_correct": true},
+                        {"text": "Constituer la base de la dimension de processus qui donne les références de processus spécifiques à chaque niveau de capacité", "rationale": "Les niveaux de capacité sont liés à l'évaluation, pas à la description de la structure des processus.", "is_correct": false},
+                        {"text": "Contenir les attributs génériques pour les niveaux deux, trois, quatre et cinq", "rationale": "Les attributs génériques sont liés au modèle d'évaluation de la capacité, pas au modèle de référence des processus.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la manière dont COBIT organise ses processus."
+                },
+                {
+                    "question": "Dans quel ordre ce qui suit se présenterait-il dans le Modèle de référence des processus COBIT 5? 1. Créer 2. Diriger 3. Planifier",
+                    "answer_options": [
+                        {"text": "2, 3, 1", "rationale": "L'ordre correct des domaines de gouvernance et de gestion est EDM (Évaluer, Diriger, Surveiller) et PBRM (Planifier, Bâtir, Exécuter, Surveiller). Donc, Diriger (EDM), Planifier (APO), Créer (BAI).", "is_correct": true},
+                        {"text": "1, 2, 3", "rationale": "Cet ordre ne correspond pas à la structure des domaines COBIT.", "is_correct": false},
+                        {"text": "2, 1, 3", "rationale": "Cet ordre ne correspond pas à la structure des domaines COBIT.", "is_correct": false},
+                        {"text": "3, 1, 2", "rationale": "Cet ordre ne correspond pas à la structure des domaines COBIT.", "is_correct": false}
+                    ],
+                    "hint": "Rappelez-vous les acronymes des domaines de gouvernance et de gestion de COBIT 5."
+                },
+                {
+                    "question": "Identifiez les mots qui manquent dans la phrase suivante. L'architecture d'entreprise est considérée être une catégorie de compétences pour le domaine de processus [?].",
+                    "answer_options": [
+                        {"text": "Évaluer, diriger et surveiller (EDS)", "rationale": "EDS est le domaine de la gouvernance, pas spécifiquement lié à l'architecture d'entreprise comme compétence.", "is_correct": false},
+                        {"text": "Bâtir, acquérir et implanter (BAI)", "rationale": "BAI est axé sur la construction et l'acquisition, pas la définition de l'architecture.", "is_correct": false},
+                        {"text": "Aligner, planifier et organiser (APO)", "rationale": "L'architecture d'entreprise est une catégorie de compétences clé au sein du domaine APO (Aligner, Planifier et Organiser), car elle concerne la structure globale et la planification des TI.", "is_correct": true},
+                        {"text": "Surveiller, évaluer et mesurer (SEM)", "rationale": "SEM est axé sur la surveillance et l'évaluation, pas l'architecture.", "is_correct": false}
+                    ],
+                    "hint": "Ce domaine est responsable de la stratégie et de l'organisation des ressources TI."
+                },
+                {
+                    "question": "Quel est le niveau de capacité d'un processus établi ?",
+                    "answer_options": [
+                        {"text": "Niveau 1", "rationale": "Le Niveau 1 est 'Exécuté'.", "is_correct": false},
+                        {"text": "Niveau 2", "rationale": "Le Niveau 2 est 'Géré'.", "is_correct": false},
+                        {"text": "Niveau 3", "rationale": "Le Niveau 3 dans le modèle de capacité des processus COBIT 5 est 'Établi', ce qui signifie que le processus est défini et mis en œuvre à l'aide de processus standardisés.", "is_correct": true},
+                        {"text": "Niveau 6", "rationale": "Le modèle COBIT 5 va jusqu'au Niveau 5 (Optimisation).", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la hiérarchie des niveaux de maturité des processus."
+                },
+                {
+                    "question": "Par quoi les résultats liés aux TI, requis pour atteindre les objectifs d'entreprise, sont-ils représentés ?",
+                    "answer_options": [
+                        {"text": "Objectifs liés aux TI", "rationale": "Les objectifs liés aux TI sont la traduction des objectifs d'entreprise en objectifs spécifiques pour les TI, contribuant ainsi à l'atteinte des résultats commerciaux.", "is_correct": true},
+                        {"text": "Objectifs du facilitateur", "rationale": "Les objectifs du facilitateur sont plus granulaires et soutiennent les objectifs liés aux TI.", "is_correct": false},
+                        {"text": "Tableau de bord prospectif des TI", "rationale": "Le tableau de bord prospectif des TI est un outil de mesure, pas la représentation des résultats eux-mêmes.", "is_correct": false},
+                        {"text": "Processus", "rationale": "Les processus sont des moyens d'atteindre les objectifs, pas les résultats eux-mêmes.", "is_correct": false}
+                    ],
+                    "hint": "Ces objectifs sont le lien direct entre la stratégie d'entreprise et les activités TI."
+                },
+                {
+                    "question": "Comment s'appelle un ensemble de pratiques influencées par les politiques et les procédures de l'entreprise qui s'inspire des intrants d'un certain nombre de sources, manipule les intrants et produit des extrants ?",
+                    "answer_options": [
+                        {"text": "Référentiel", "rationale": "Un référentiel est un ensemble de documents ou de connaissances, pas un ensemble de pratiques dynamiques.", "is_correct": false},
+                        {"text": "Politiques", "rationale": "Les politiques sont des directives, pas un ensemble de pratiques avec intrants et extrants.", "is_correct": false},
+                        {"text": "Facilitateurs", "rationale": "Les facilitateurs sont des facteurs génériques qui influencent la gouvernance, mais pas spécifiquement un ensemble de pratiques avec un flux d'activités.", "is_correct": false},
+                        {"text": "Processus", "rationale": "Cette description correspond précisément à la définition d'un 'Processus' : un ensemble de pratiques qui transforment des intrants en extrants, guidées par des politiques et des procédures.", "is_correct": true}
+                    ],
+                    "hint": "Pensez à la manière dont les activités sont structurées pour atteindre un résultat."
+                },
+                {
+                    "question": "Dans le MRP, quel est l'élément qui offre une vue d'ensemble de ce que fait le processus ?",
+                    "answer_options": [
+                        {"text": "La Fonction désirée d'un processus", "rationale": "La fonction désirée est l'objectif, pas la vue d'ensemble de ce que fait le processus.", "is_correct": false},
+                        {"text": "L'identification d'un processus", "rationale": "L'identification est le nom ou le code du processus.", "is_correct": false},
+                        {"text": "La description d'un processus", "rationale": "La description d'un processus fournit une vue d'ensemble de son objectif, de ses activités clés et de ce qu'il réalise.", "is_correct": true},
+                        {"text": "Les objectifs et les indicateurs d'un processus", "rationale": "Les objectifs et indicateurs mesurent la performance, mais ne décrivent pas l'ensemble du processus.", "is_correct": false}
+                    ],
+                    "hint": "C'est l'explication textuelle du processus."
+                },
+                {
+                    "question": "Comment l'objectif de gouvernance de 'Création de valeur' est-il atteint ?",
+                    "answer_options": [
+                        {"text": "En réalisant des bénéfices", "rationale": "La réalisation des bénéfices est une composante de la création de valeur.", "is_correct": false},
+                        {"text": "En optimisant les ressources", "rationale": "L'optimisation des ressources est une composante de la création de valeur.", "is_correct": false},
+                        {"text": "En optimisant le risque", "rationale": "L'optimisation du risque est une composante de la création de valeur.", "is_correct": false},
+                        {"text": "Toutes les propositions ci-dessus", "rationale": "La création de valeur dans COBIT 5 est atteinte en équilibrant la réalisation des bénéfices, l'optimisation des risques et l'optimisation des ressources.", "is_correct": true}
+                    ],
+                    "hint": "La création de valeur est un équilibre de plusieurs facteurs clés."
+                },
+                {
+                    "question": "Quel est l'objectif de l'élément principes au sein du modèle principes, politiques et cadres?",
+                    "answer_options": [
+                        {"text": "Être limités en nombre", "rationale": "Bien que les principes soient souvent concis, leur nombre n'est pas leur objectif.", "is_correct": false},
+                        {"text": "Exprimer les valeurs fondamentales de l'entreprise", "rationale": "Les principes expriment les valeurs fondamentales et les croyances qui guident le comportement d'une organisation.", "is_correct": true},
+                        {"text": "Faire preuve d'ouverture et de souplesse afin de s'assurer que les politiques atteignent l'objectif stipulé", "rationale": "Ceci est plus lié à la nature des politiques.", "is_correct": false},
+                        {"text": "Fournir un flux logique pour le personnel qui doit s'y conformer", "rationale": "Ceci est plus le rôle des procédures.", "is_correct": false}
+                    ],
+                    "hint": "Les principes sont les fondements éthiques et moraux de l'organisation."
+                },
+                {
+                    "question": "Pour quelle raison une évaluation de capacité des processus est-elle exécutée ?",
+                    "answer_options": [
+                        {"text": "Pour identifier les améliorations du processus", "rationale": "Une évaluation de la capacité des processus aide à identifier les forces et les faiblesses des processus, conduisant à des opportunités d'amélioration.", "is_correct": true},
+                        {"text": "Pour conduire une analyse coût/avantage du processus", "rationale": "L'analyse coût/avantage est une activité distincte, bien qu'elle puisse être informée par l'évaluation.", "is_correct": false},
+                        {"text": "Pour évaluer la qualité des personnes exécutant le processus", "rationale": "L'évaluation de la capacité des processus se concentre sur le processus lui-même, pas directement sur la qualité des personnes.", "is_correct": false},
+                        {"text": "Pour définir les mesures du processus", "rationale": "Les mesures du processus sont utilisées dans l'évaluation, mais ne sont pas la raison de l'évaluation elle-même.", "is_correct": false}
+                    ],
+                    "hint": "L'objectif est d'améliorer la performance et la maturité."
+                },
+                {
+                    "question": "Dans un tableau RACI, comment le rôle d'une personne responsable d'une tâche est-il décrit ?",
+                    "answer_options": [
+                        {"text": "Une personne qui participe à la tâche", "rationale": "Ceci correspond au rôle 'Consulted' (C) ou 'Informed' (I).", "is_correct": false},
+                        {"text": "Une personne qui s'assure de la bonne exécution de la tâche", "rationale": "Dans une matrice RACI, 'Responsable' (R) signifie la personne qui exécute la tâche et s'assure de sa bonne exécution.", "is_correct": true},
+                        {"text": "Une personne qui est garante du succès de la tâche", "rationale": "Ceci correspond au rôle 'Accountable' (A).", "is_correct": false},
+                        {"text": "Une personne qui reçoit des informations sur une tâche", "rationale": "Ceci correspond au rôle 'Informed' (I).", "is_correct": false}
+                    ],
+                    "hint": "Rappelez-vous la signification de chaque lettre dans l'acronyme RACI."
+                },
+                {
+                    "question": "En quoi les besoins des parties prenantes se déclinent-ils ?",
+                    "answer_options": [
+                        {"text": "Objectifs liés aux TI", "rationale": "Les objectifs liés aux TI sont une étape ultérieure dans la cascade des objectifs, après les objectifs d'entreprise.", "is_correct": false},
+                        {"text": "Objectifs d'entreprise", "rationale": "Les besoins des parties prenantes sont traduits en objectifs d'entreprise, qui sont ensuite déclinés en objectifs liés aux TI et en objectifs de facilitateurs.", "is_correct": true},
+                        {"text": "Objectifs de processus", "rationale": "Les objectifs de processus sont plus spécifiques et découlent des objectifs liés aux TI.", "is_correct": false},
+                        {"text": "Objectifs d'optimisation des risques", "rationale": "L'optimisation des risques est une composante de la création de valeur, pas la première déclinaison des besoins des parties prenantes.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la première étape de la cascade des objectifs à partir des besoins des parties prenantes."
+                },
+                {
+                    "question": "Quelle caractéristique une bonne politique doit-elle afficher ?",
+                    "answer_options": [
+                        {"text": "Efficace", "rationale": "Une bonne politique doit être efficace pour atteindre son objectif et guider le comportement souhaité.", "is_correct": true},
+                        {"text": "Exprime les valeurs fondamentales de l'entreprise", "rationale": "Ceci est plus le rôle des principes.", "is_correct": false},
+                        {"text": "Intrusive", "rationale": "Une politique intrusive serait contre-productive.", "is_correct": false},
+                        {"text": "Limitée en nombre", "rationale": "Le nombre n'est pas une caractéristique de la qualité d'une politique.", "is_correct": false}
+                    ],
+                    "hint": "La politique doit produire les résultats escomptés."
+                },
+                {
+                    "question": "Quel niveau de notation un processus doit-il obtenir afin de réussir une évaluation ?",
+                    "answer_options": [
+                        {"text": "C - Complètement uniquement", "rationale": "Un processus n'a pas besoin d'être 'Complètement' pour réussir une évaluation, 'Grandement' est aussi suffisant.", "is_correct": false},
+                        {"text": "P - Partiellement et/ou G - Grandement", "rationale": "Partiellement n'est généralement pas suffisant pour réussir une évaluation formelle.", "is_correct": false},
+                        {"text": "G - Grandement et/ou C - Complètement", "rationale": "Pour qu'un processus soit considéré comme réussi lors d'une évaluation, il doit généralement obtenir une note 'Grandement' (G) ou 'Complètement' (C) pour ses attributs.", "is_correct": true},
+                        {"text": "P - Partiellement", "rationale": "Partiellement n'est pas suffisant.", "is_correct": false}
+                    ],
+                    "hint": "Pensez aux niveaux supérieurs de notation dans le modèle de capacité."
+                },
+                {
+                    "question": "Quelle action est une bonne pratique pour contribuer à encourager le comportement désiré au sein d'une entreprise ?",
+                    "answer_options": [
+                        {"text": "Publier des principes d'exploitation", "rationale": "Les principes d'exploitation sont des directives, mais ne sont pas directement une action pour encourager le comportement.", "is_correct": false},
+                        {"text": "Communiquer les catégories de compétences", "rationale": "La communication des compétences est informative, mais pas directement un levier de comportement.", "is_correct": false},
+                        {"text": "Nommer des chefs de projet", "rationale": "Nommer des chefs de projet avec des rôles clairs et des responsabilités définies encourage la performance et le comportement souhaité en matière de gestion de projet en créant de la responsabilisation.", "is_correct": true},
+                        {"text": "Publier des procédures de délégation de pouvoirs", "rationale": "Ceci est une action de documentation, pas directement d'encouragement du comportement.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à ce qui peut motiver et guider les individus dans leurs actions."
+                },
+                {
+                    "question": "Quel aspect se rapporte au principe clé 'Appliquer un référentiel intégré unique' de COBIT 5 ?",
+                    "answer_options": [
+                        {"text": "S'aligner sur les derniers développements en matière de Gouvernance", "rationale": "L'alignement est un objectif, pas l'aspect direct du référentiel intégré.", "is_correct": false},
+                        {"text": "Offrir une architecture simple", "rationale": "L'application d'un référentiel intégré unique vise à fournir une architecture simple et cohérente pour la gouvernance des TI de l'entreprise, en évitant la fragmentation.", "is_correct": true},
+                        {"text": "Traduire les besoins des parties prenantes en une stratégie", "rationale": "Ceci est le rôle de la cascade des objectifs.", "is_correct": false},
+                        {"text": "Définir la relation entre la Gouvernance et la Gestion", "rationale": "Ceci est un principe distinct de COBIT 5.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la simplification et à la cohérence du cadre."
+                },
+                {
+                    "question": "Qui est une partie prenante interne ?",
+                    "answer_options": [
+                        {"text": "Un client", "rationale": "Un client est une partie prenante externe.", "is_correct": false},
+                        {"text": "Un partenaire commercial", "rationale": "Un partenaire commercial est une partie prenante externe.", "is_correct": false},
+                        {"text": "Un organisme de réglementation", "rationale": "Un organisme de réglementation est une partie prenante externe.", "is_correct": false},
+                        {"text": "Un dirigeant d'entreprise", "rationale": "Un dirigeant d'entreprise est une partie prenante interne, car il fait partie de la direction de l'organisation.", "is_correct": true}
+                    ],
+                    "hint": "Pensez aux personnes qui travaillent au sein de l'organisation."
+                },
+                {
+                    "question": "Quelle composante du cycle de vie de la mise en œuvre aborde la question 'Comment y parviendrons-nous' ?",
+                    "answer_options": [
+                        {"text": "Définir les problèmes et les posibilités", "rationale": "Ceci est la phase initiale ('Quel est le moteur ?').", "is_correct": false},
+                        {"text": "Intégrer de nouvelles approches", "rationale": "L'intégration est une activité, pas la phase principale de 'comment y parvenir'.", "is_correct": false},
+                        {"text": "Surveiller et évaluer", "rationale": "Ceci est la phase 6 du cycle de vie.", "is_correct": false},
+                        {"text": "Utiliser les améliorations", "rationale": "La phase 'Utiliser les améliorations' (ou 'Realize Benefits') est la phase d'exécution où les plans sont mis en œuvre pour atteindre les objectifs, répondant à la question 'Comment y parviendrons-nous ?'.", "is_correct": true}
+                    ],
+                    "hint": "C'est la phase où les actions concrètes sont menées."
+                },
+                {
+                    "question": "Lors de l'élaboration d'un plan de mise en œuvre pour la gouvernance et la gestion des TI, quelle proposition est un facteur environnemental à prendre en considération ?",
+                    "answer_options": [
+                        {"text": "Modèles complexes d’exploitation des TI", "rationale": "Ceci est un facteur interne lié à la structure opérationnelle.", "is_correct": false},
+                        {"text": "Dépenses en TI masquées et indésirables", "rationale": "Ceci est un problème interne de gestion des coûts.", "is_correct": false},
+                        {"text": "Lois et réglementations applicables", "rationale": "Les lois et réglementations applicables sont des facteurs environnementaux externes qui doivent impérativement être pris en compte lors de l'élaboration d'un plan de mise en œuvre de la gouvernance et de la gestion des TI.", "is_correct": true},
+                        {"text": "Audit externe ou évaluations de consultants", "rationale": "Ce sont des activités, pas des facteurs environnementaux en soi.", "is_correct": false}
+                    ],
+                    "hint": "Pensez aux contraintes ou opportunités externes qui influencent la mise en œuvre."
+                },
+                {
+                    "question": "Quel attribut NE s'applique PAS à une Activité de processus ?",
+                    "answer_options": [
+                        {"text": "Examine les intrants et les extrants du processus", "rationale": "Une activité de processus examine les intrants et produit des extrants.", "is_correct": false},
+                        {"text": "Aide à la création de rôles et de responsabilités clairs", "rationale": "Les activités de processus, par leur définition, contribuent à clarifier les rôles et responsabilités.", "is_correct": false},
+                        {"text": "Décrit un ensemble d'étapes de mise en œuvre pour appliquer une pratique de gestion", "rationale": "Une activité de processus est un ensemble d'étapes pour appliquer une pratique.", "is_correct": false},
+                        {"text": "Fournit des énoncés d'actions visant à générer des avantages", "rationale": "Les énoncés d'actions visant à générer des avantages sont plus liés aux objectifs ou aux résultats attendus, et non un attribut direct d'une activité de processus elle-même.", "is_correct": true}
+                    ],
+                    "hint": "Pensez à ce qu'une activité de processus *fait* par opposition à ce qu'elle *vise* à atteindre."
+                },
+                {
+                    "question": "Identifier le(s) mot(s) qui manque(nt) dans la phrase suivante. Les responsabilités de Gestion comprennent la planification et la surveillance des activités conformément à l’orientation fixée par l'organisme de gouvernance afin d’atteindre les objectifs [ ? ].",
+                    "answer_options": [
+                        {"text": "du facilitateur", "rationale": "Les objectifs du facilitateur sont plus spécifiques et soutiennent des objectifs plus larges.", "is_correct": false},
+                        {"text": "des parties prenantes", "rationale": "Les besoins des parties prenantes sont l'origine, pas les objectifs directs de la gestion.", "is_correct": false},
+                        {"text": "liés aux TI", "rationale": "Les objectifs liés aux TI sont un niveau de déclinaison, mais le terme le plus englobant pour la gestion est 'objectifs d'entreprise'.", "is_correct": false},
+                        {"text": "d'entreprise", "rationale": "Les responsabilités de gestion visent à atteindre les objectifs d'entreprise, en s'alignant sur l'orientation stratégique définie par l'organisme de gouvernance.", "is_correct": true}
+                    ],
+                    "hint": "Pensez au niveau le plus élevé des objectifs que la gestion cherche à atteindre."
+                },
+                {
+                    "question": "Quel est le terme employé pour décrire les valeurs selon lesquelles l'entreprise souhaite conduire ses activités ?",
+                    "answer_options": [
+                        {"text": "Qualité intrinsèque", "rationale": "La qualité intrinsèque est un critère d'information.", "is_correct": false},
+                        {"text": "Éthique organisationnelle", "rationale": "L'éthique organisationnelle fait référence aux valeurs et aux principes qui guident le comportement et la conduite des activités au sein d'une organisation.", "is_correct": true},
+                        {"text": "Éthique individuelle", "rationale": "L'éthique individuelle est personnelle, pas celle de l'entreprise.", "is_correct": false},
+                        {"text": "Bonnes pratiques", "rationale": "Les bonnes pratiques sont des méthodes, pas des valeurs.", "is_correct": false}
+                    ],
+                    "hint": "Ce terme est lié à la culture et aux principes moraux de l'entreprise."
+                },
+                {
+                    "question": "Quel outil d'affaires est utilisé pour justifier les investissements d'affaires ?",
+                    "answer_options": [
+                        {"text": "Objectifs d'affaires", "rationale": "Les objectifs d'affaires sont les buts, pas l'outil de justification.", "is_correct": false},
+                        {"text": "Dossier d'affaires", "rationale": "Un dossier d'affaires (business case) est un outil utilisé pour justifier les investissements en présentant les bénéfices attendus, les coûts et les risques.", "is_correct": true},
+                        {"text": "Politiques d'affaires", "rationale": "Les politiques d'affaires sont des directives, pas un outil de justification d'investissement.", "is_correct": false},
+                        {"text": "Modèle de capacité des processus", "rationale": "Le modèle de capacité des processus est un outil d'évaluation, pas de justification d'investissement.", "is_correct": false}
+                    ],
+                    "hint": "C'est un document qui présente la valeur proposée d'un projet."
+                },
+                {
+                    "question": "Quel énoncé N'est PAS une raison pour laquelle COBIT 5 est un référentiel intégré ?",
+                    "answer_options": [
+                        {"text": "Il offre une couverture d'entreprise complète", "rationale": "C'est une raison pour laquelle COBIT 5 est intégré.", "is_correct": false},
+                        {"text": "Il offre une architecture simple", "rationale": "C'est une raison pour laquelle COBIT 5 est intégré.", "is_correct": false},
+                        {"text": "Il doit être utilisé avec d'autres normes", "rationale": "Le fait que COBIT 5 puisse être utilisé avec d'autres normes est vrai, mais ce n'est pas la raison pour laquelle il est intrinsèquement un référentiel 'intégré'. Son intégration vient de sa capacité à couvrir l'entreprise de bout en bout et à fournir une architecture cohérente.", "is_correct": true},
+                        {"text": "Il fonctionne avec des référentiels ISACA antérieurs", "rationale": "C'est une raison pour laquelle COBIT 5 est intégré.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la nature de l'intégration de COBIT, plutôt qu'à sa compatibilité."
+                },
+                {
+                    "question": "Identifiez les mots qui manquent dans la phrase suivante. Les processus d'affaires transforment les connaissances afin de créer [ ? ] pour une entreprise.",
+                    "answer_options": [
+                        {"text": "des processus TI", "rationale": "Les processus d'affaires ne créent pas des processus TI, ils les utilisent ou interagissent avec eux.", "is_correct": false},
+                        {"text": "des informations", "rationale": "Les processus d'affaires peuvent traiter l'information, mais leur objectif final est plus large.", "is_correct": false},
+                        {"text": "des données", "rationale": "Les données sont une forme brute d'information, pas le produit final des processus d'affaires.", "is_correct": false},
+                        {"text": "une valeur", "rationale": "Les processus d'affaires transforment les connaissances et d'autres intrants pour créer de la valeur pour l'entreprise.", "is_correct": true}
+                    ],
+                    "hint": "L'objectif ultime de toute activité d'entreprise est de générer cela."
+                },
+                {
+                    "question": "Quelle(s) dimension(s) traite(nt) précisément du Modèle de référence des processus ?",
+                    "answer_options": [
+                        {"text": "La dimension capacité", "rationale": "La dimension capacité est traitée par le modèle d'évaluation de la capacité des processus.", "is_correct": false},
+                        {"text": "La dimension processus", "rationale": "Le Modèle de référence des processus traite précisément de la dimension processus, en décrivant la structure et le contenu des processus de COBIT.", "is_correct": true},
+                        {"text": "La dimension facilitateur", "rationale": "La dimension facilitateur est plus large et concerne tous les facilitateurs de COBIT.", "is_correct": false},
+                        {"text": "Les dimensions processus et capacité", "rationale": "Bien que liées, le modèle de référence se concentre sur la dimension processus.", "is_correct": false}
+                    ],
+                    "hint": "Ce modèle est le cœur de la description des activités de COBIT."
+                },
+                {
+                    "question": "Quel élément est une capacité de services pour fournir des services internes et externes ?",
+                    "answer_options": [
+                        {"text": "Référentiels", "rationale": "Les référentiels sont des collections d'informations, pas des capacités de services en soi.", "is_correct": false},
+                        {"text": "Informations", "rationale": "L'information est un facilitateur clé qui, lorsqu'elle est gérée efficacement, constitue une capacité de services essentielle pour fournir des services internes et externes.", "is_correct": true},
+                        {"text": "Objectif intrinsèque", "rationale": "Un objectif intrinsèque est un critère de qualité de l'information, pas une capacité de services.", "is_correct": false},
+                        {"text": "Objectif contextuel", "rationale": "Un objectif contextuel est un critère de qualité de l'information, pas une capacité de services.", "is_correct": false}
+                    ],
+                    "hint": "C'est un actif crucial qui permet la prestation de services."
+                },
+                {
+                    "question": "Que mesure un 'Indicateur de fonctionnement' ?",
+                    "answer_options": [
+                        {"text": "Si les objectifs du facilitateur ont été atteints", "rationale": "Ceci est mesuré par les KGI (Key Goal Indicators).", "is_correct": false},
+                        {"text": "Si les besoins des parties prenantes sont pris en compte", "rationale": "Ceci est lié à la satisfaction des parties prenantes, mesurée par les KGI.", "is_correct": false},
+                        {"text": "Si la gouvernance est gérée", "rationale": "La gestion de la gouvernance est un processus plus large.", "is_correct": false},
+                        {"text": "Si les bonnes pratiques sont appliquées", "rationale": "Un 'Indicateur de fonctionnement' (Operating Indicator) mesure comment les processus fonctionnent et si les bonnes pratiques sont appliquées efficacement.", "is_correct": true}
+                    ],
+                    "hint": "Ces indicateurs sont liés à l'efficacité opérationnelle des processus."
+                },
+                {
+                    "question": "Comment s'appelle le critère d'information précis qui répond uniquement aux besoins du consommateur d'informations ?",
+                    "answer_options": [
+                        {"text": "Conformité", "rationale": "La conformité est liée au respect des règles, pas spécifiquement aux besoins du consommateur.", "is_correct": false},
+                        {"text": "Crédibilité", "rationale": "La crédibilité est liée à la fiabilité de l'information.", "is_correct": false},
+                        {"text": "Simplicité de fonctionnement", "rationale": "La simplicité de fonctionnement est une caractéristique, pas un critère d'information précis.", "is_correct": false},
+                        {"text": "Efficacité", "rationale": "L'efficacité, en tant que critère d'information, signifie que l'information est pertinente et répond précisément aux besoins du consommateur d'informations.", "is_correct": true}
+                    ],
+                    "hint": "Ce critère est directement lié à l'utilité de l'information pour l'utilisateur final."
+                }
+            ]
+        };
+
+        // Fonction pour afficher une question spécifique
+        function displayQuestion(index) {
+            if (index >= 0 && index < questions.length) {
+                const question = questions[index];
+                const questionHtml = `
+                    <div class="question-card" id="question-card-${index}">
+                        <h5>${index + 1}. ${question.question}</h5>
+                        <div class="options-container">
+                            ${question.answer_options.map((option, optionIndex) => `
+                                <div class="form-check answer-option" data-is-correct="${option.is_correct}">
+                                    <input class="form-check-input" type="radio" name="currentQuestion" id="question${index}-option${optionIndex}" value="${optionIndex}" ${userAnswers[index] !== null && userAnswers[index].selectedOptionIndex === optionIndex ? 'checked' : ''} ${userAnswers[index] !== null ? 'disabled' : ''}>
+                                    <label class="form-check-label" for="question${index}-option${optionIndex}">
+                                        ${option.text}
+                                    </label>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button class="btn btn-info btn-sm btn-toggle-info mt-3" data-target="hint-${index}">
+                            <i class="fas fa-lightbulb me-2"></i> Afficher l'indice
+                        </button>
+                        <div id="hint-${index}" class="hint">
+                            <strong>Indice :</strong> ${question.hint}
+                        </div>
+                        <button class="btn btn-secondary btn-sm ms-2 btn-toggle-info mt-3" data-target="rationale-${index}">
+                            <i class="fas fa-info-circle me-2"></i> Afficher l'explication
+                        </button>
+                        <div id="rationale-${index}" class="rationale">
+                            <strong>Explication détaillée :</strong>
+                            <ul>
+                                ${question.answer_options.map(option => `
+                                    <li>
+                                        <strong>${option.text} :</strong> ${option.rationale} ${option.is_correct ? '<i class="fas fa-check-circle text-success ms-2"></i>' : '<i class="fas fa-times-circle text-danger ms-2"></i>'}
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                quizDisplayDiv.innerHTML = questionHtml; // Replace content with current question
+                updateNavigationButtons();
+                addCurrentQuestionEventListeners(); // Add listeners for the newly rendered question
+
+                // If question was already answered, show feedback and rationale
+                if (userAnswers[index] !== null) {
+                    applyFeedback(index, userAnswers[index].selectedOptionIndex, userAnswers[index].isCorrect);
+                    const rationaleDiv = document.getElementById(`rationale-${index}`);
+                    if (rationaleDiv) rationaleDiv.classList.add('show-info');
+                    // Update rationale button text
+                    const rationaleBtn = quizDisplayDiv.querySelector('button[data-target^="rationale-"]');
+                    if (rationaleBtn) rationaleBtn.innerHTML = rationaleBtn.innerHTML.replace('Afficher', 'Masquer');
+                }
+            }
+        }
+
+        // Function to update navigation button states, score display, and progress bar
+        function updateNavigationButtons() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = userAnswers[currentQuestionIndex] === null || currentQuestionIndex === questions.length - 1;
+            
+            // Update score display
+            const answeredCount = userAnswers.filter(answer => answer !== null).length;
+            currentScoreDisplay.textContent = `Score: ${score} / ${answeredCount}`;
+            questionCountDisplay.textContent = `Question: ${currentQuestionIndex + 1} / ${questions.length}`;
+
+            // Update progress bar
+            const progressPercentage = ((currentQuestionIndex + 1) / questions.length) * 100;
+            questionProgressBar.style.width = `${progressPercentage}%`;
+            questionProgressBar.setAttribute('aria-valuenow', progressPercentage);
+        }
+
+        // Function to apply visual feedback to options
+        function applyFeedback(questionIndex, selectedOptionIndex, isCorrect) {
+            const optionsContainer = quizDisplayDiv.querySelector('.options-container');
+            if (!optionsContainer) return;
+
+            optionsContainer.querySelectorAll('.answer-option').forEach((optionElement, idx) => {
+                optionElement.classList.remove('correct', 'incorrect'); // Clear previous feedback
+
+                // Highlight correct answer
+                if (questions[questionIndex].answer_options[idx].is_correct) {
+                    optionElement.classList.add('correct');
+                }
+                // Highlight selected incorrect answer
+                if (idx === selectedOptionIndex && !isCorrect) {
+                    optionElement.classList.add('incorrect');
+                }
+            });
+        }
+
+        // Function to add event listeners for the currently displayed question
+        function addCurrentQuestionEventListeners() {
+            const currentQuestionCard = document.getElementById(`question-card-${currentQuestionIndex}`);
+            const optionsContainer = currentQuestionCard.querySelector('.options-container');
+
+            // Event listener for selecting an answer option (this acts as submission)
+            optionsContainer.addEventListener('change', function(event) {
+                if (event.target.type === 'radio') {
+                    const selectedOption = event.target;
+                    const selectedOptionIndex = parseInt(selectedOption.value);
+                    const isCorrect = questions[currentQuestionIndex].answer_options[selectedOptionIndex].is_correct;
+                    
+                    // If not already answered, update score and userAnswers
+                    if (userAnswers[currentQuestionIndex] === null) {
+                        if (isCorrect) {
+                            score++;
+                        }
+                        userAnswers[currentQuestionIndex] = {
+                            selectedOptionIndex: selectedOptionIndex,
+                            isCorrect: isCorrect
+                        };
+                    }
+
+                    // Disable all radio buttons for the current question
+                    optionsContainer.querySelectorAll('input[type="radio"]').forEach(radio => {
+                        radio.disabled = true;
+                    });
+
+                    applyFeedback(currentQuestionIndex, selectedOptionIndex, isCorrect);
+
+                    // Show rationale
+                    const rationaleDiv = document.getElementById(`rationale-${currentQuestionIndex}`);
+                    if (rationaleDiv) rationaleDiv.classList.add('show-info');
+                    
+                    // Update rationale button text
+                    const rationaleBtn = quizDisplayDiv.querySelector('button[data-target^="rationale-"]');
+                    if (rationaleBtn) rationaleBtn.innerHTML = rationaleBtn.innerHTML.replace('Afficher', 'Masquer');
+
+                    updateNavigationButtons(); // Update score and enable next button
+                }
+            });
+
+            // Event listeners for hint and rationale buttons
+            document.querySelectorAll('.btn-toggle-info').forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetId = this.dataset.target;
+                    const targetElement = document.getElementById(targetId);
+                    targetElement.classList.toggle('show-info');
+                    
+                    // Changer le texte du bouton
+                    if (targetElement.classList.contains('show-info')) {
+                        this.innerHTML = this.innerHTML.replace('Afficher', 'Masquer');
+                    } else {
+                        this.innerHTML = this.innerHTML.replace('Masquer', 'Afficher');
+                    }
+                });
+            });
+        }
+
+        // Navigation functions
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion(currentQuestionIndex);
+            } else {
+                // End of quiz, show results modal
+                displayResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion(currentQuestionIndex);
+            }
+        }
+
+        // Function to display quiz results in a modal
+        function displayResults() {
+            quizNavigationDiv.style.display = 'none'; // Hide navigation buttons
+
+            const percentage = (score / questions.length) * 100;
+            let recommendationsHtml = '';
+            let scoreColor = '';
+
+            if (percentage >= 80) {
+                scoreColor = '#28a745'; // Green
+                recommendationsHtml = `
+                    <h4>Félicitations !</h4>
+                    <p>Votre score de ${percentage.toFixed(2)}% est excellent. Vous avez une très bonne maîtrise des concepts COBIT 5.</p>
+                    <ul>
+                        <li>Continuez à réviser les domaines où vous avez eu quelques difficultés.</li>
+                        <li>Pensez à pratiquer avec des examens blancs pour vous familiariser avec le format et la gestion du temps.</li>
+                        <li>Explorez les guides de mise en œuvre avancés de COBIT pour approfondir vos connaissances.</li>
+                    </ul>
+                `;
+            } else {
+                scoreColor = '#dc3545'; // Red
+                recommendationsHtml = `
+                    <h4>Axes d'amélioration</h4>
+                    <p>Votre score de ${percentage.toFixed(2)}% indique que des révisions supplémentaires sont nécessaires pour maîtriser pleinement les concepts COBIT 5.</p>
+                    <ul>
+                        <li>Concentrez-vous sur les questions que vous avez manquées et comprenez bien les explications détaillées.</li>
+                        <li>Revoyez les principes, facilitateurs et domaines de processus de COBIT 5.</li>
+                        <li>Utilisez les ressources officielles d'ISACA et les manuels de formation pour renforcer vos connaissances.</li>
+                        <li>N'hésitez pas à refaire ce quiz plusieurs fois pour consolider votre apprentissage.</li>
+                    </ul>
+                `;
+            }
+
+            // Populate modal content
+            finalScoreCorrectSpan.textContent = score;
+            finalScoreTotalSpan.textContent = questions.length;
+            finalScorePercentage.textContent = `${percentage.toFixed(2)}%`;
+            finalScorePercentage.style.color = scoreColor;
+            finalRecommendationsDiv.innerHTML = recommendationsHtml;
+
+            // Show the modal
+            resultsModal.show();
+        }
+
+        // Function to restart the quiz
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = new Array(questions.length).fill(null); // Reset user answers
+            quizNavigationDiv.style.display = 'flex'; // Show navigation buttons
+            resultsModal.hide(); // Hide the modal
+            displayQuestion(currentQuestionIndex); // Start from the first question
+        }
+
+        // Attach navigation button handlers
+        nextBtn.addEventListener('click', nextQuestion);
+        prevBtn.addEventListener('click', previousQuestion);
+        restartQuizBtnModal.addEventListener('click', restartQuiz); // Attach restart to modal button
+
+        // Initial load of the quiz
+        document.addEventListener('DOMContentLoaded', () => {
+            // Hide spinner
+            loadingSpinner.style.display = 'none'; 
+            questions = quizData.questions; // Assign loaded data
+            displayQuestion(currentQuestionIndex); // Display the first question
+        });
+    </script>
+</body>
+</html>
