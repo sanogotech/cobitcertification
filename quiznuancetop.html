@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Certification Avancé (COBIT 5)</title>
+    <!-- Lien vers Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Lien vers Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Styles CSS personnalisés pour le quiz */
+        body {
+            font-family: 'Inter', sans-serif; /* Utilisation de la police Inter */
+            background-color: #e8f0f7; /* Un fond bleu clair doux */
+            color: #2c3e50; /* Couleur de texte principale */
+            padding-top: 30px;
+            padding-bottom: 30px;
+            overflow-x: hidden; /* Empêche le défilement horizontal */
+        }
+        .quiz-container {
+            max-width: 950px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 15px; /* Coins arrondis */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.18); /* Ombre plus prononcée et élégante */
+            animation: fadeIn 1s ease-out; /* Animation d'apparition */
+        }
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #3498db; /* Bleu secondaire de Bootstrap */
+            font-weight: 700;
+            font-size: 2.8rem;
+            position: relative;
+            padding-bottom: 18px;
+        }
+        .quiz-header::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 5px;
+            background-color: #2c3e50; /* Couleur primaire */
+            border-radius: 3px;
+        }
+
+        .score-progress-container {
+            display: flex;
+            flex-direction: column; /* Empile le score et la progression verticalement */
+            margin-bottom: 25px;
+            padding: 15px 25px;
+            background-color: #f0f8ff;
+            border-radius: 10px; /* Coins arrondis */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .score-display, .question-progress-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 10px; /* Espace entre le score et le nombre de questions */
+        }
+        .question-progress-display {
+            margin-bottom: 0; /* Pas de marge sous le dernier élément du conteneur */
+        }
+        .progress {
+            height: 15px;
+            border-radius: 10px; /* Coins arrondis */
+            background-color: #e9ecef;
+            flex-grow: 1;
+            margin-left: 20px; /* Espace entre le nombre de questions et la barre de progression */
+        }
+        .progress-bar {
+            background-color: #3498db;
+            border-radius: 10px; /* Coins arrondis */
+            transition: width 0.5s ease-in-out;
+        }
+
+        .question-card {
+            margin-bottom: 35px;
+            border: none; /* Supprime la bordure par défaut */
+            border-radius: 12px; /* Coins arrondis */
+            padding: 30px;
+            background-color: #fefefe;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1); /* Ombre légère pour chaque carte */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .question-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .question-card h5 {
+            margin-bottom: 25px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 1.4rem;
+            line-height: 1.5;
+        }
+        .answer-option {
+            margin-bottom: 15px;
+            padding: 15px 20px;
+            border: 1px solid #d0d9e2;
+            border-radius: 8px; /* Coins arrondis */
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            background-color: #f8fbfd;
+        }
+        .answer-option:hover {
+            background-color: #eef7ff; /* Bleu très clair au survol */
+            border-color: #9ac7ed;
+        }
+        .answer-option input[type="radio"] {
+            margin-right: 18px;
+            transform: scale(1.3); /* Agrandit les radios boutons */
+            cursor: pointer;
+        }
+        .answer-option label {
+            cursor: pointer;
+            flex-grow: 1; /* Permet au label de prendre l'espace restant */
+        }
+
+        /* Styles pour les retours (correct/incorrect) en mode apprentissage */
+        .answer-option.correct {
+            background-color: #d4edda; /* Vert clair */
+            border-color: #28a745; /* Vert foncé */
+            font-weight: bold;
+            color: #155724;
+            animation: pulseGreen 0.5s ease-out;
+        }
+        .answer-option.incorrect {
+            background-color: #f8d7da; /* Rouge clair */
+            border-color: #dc3545; /* Rouge foncé */
+            font-weight: bold;
+            color: #721c24;
+            animation: shakeRed 0.5s ease-out;
+        }
+        .rationale, .hint, .vocabulary {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #e9eff5; /* Gris bleu clair */
+            border-left: 6px solid #607d8b; /* Gris ardoise */
+            border-radius: 8px; /* Coins arrondis */
+            font-size: 1em;
+            color: #455a64;
+            display: none; /* Masqué par défaut */
+            animation: slideInUp 0.4s ease-out;
+        }
+        .hint {
+            background-color: #fff8e1; /* Jaune très clair */
+            border-left-color: #ffb300; /* Jaune orangé */
+        }
+        .vocabulary {
+            background-color: #e0f2f7; /* Bleu très clair */
+            border-left-color: #00bcd4; /* Cyan */
+        }
+
+        .info-section ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+        .info-section li {
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        .info-section li:last-child {
+            margin-bottom: 0;
+        }
+        .show-info {
+            display: block;
+        }
+        .btn-toggle-info {
+            margin-top: 20px;
+            font-size: 0.95em;
+            padding: 10px 20px;
+            border-radius: 6px; /* Coins arrondis */
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .btn-toggle-info:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Styles pour le pop-up de résultats (modal) */
+        .results-modal .modal-content {
+            border-radius: 15px; /* Coins arrondis */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 20px;
+            text-align: center;
+        }
+        .results-modal .modal-header {
+            border-bottom: none;
+            padding-bottom: 0;
+            justify-content: center;
+        }
+        .results-modal .modal-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .results-modal .modal-body {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        .results-modal .score-text {
+            font-size: 1.8rem;
+            color: #495057;
+            margin-bottom: 15px;
+        }
+        .results-modal .score-percentage {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        .results-modal .recommendations {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #e9eff5;
+            border-radius: 10px; /* Coins arrondis */
+            border-left: 6px solid #3498db;
+            text-align: left;
+        }
+        .results-modal .recommendations h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        .results-modal .recommendations ul {
+            list-style-type: disc;
+            padding-left: 25px;
+        }
+        .results-modal .recommendations li {
+            margin-bottom: 8px;
+            color: #495057;
+        }
+        .results-modal .modal-footer {
+            border-top: none;
+            padding-top: 0;
+            justify-content: center;
+        }
+        .results-modal #restart-quiz-btn-modal {
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            border-radius: 8px; /* Coins arrondis */
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulseGreen {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.005); }
+            100% { transform: scale(1); }
+        }
+        @keyframes shakeRed {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .quiz-container {
+                padding: 20px;
+            }
+            .quiz-header {
+                font-size: 2rem;
+            }
+            .question-card h5 {
+                font-size: 1.2rem;
+            }
+            .answer-option {
+                padding: 10px 15px;
+            }
+            .results-modal .modal-title {
+                font-size: 2rem;
+            }
+            .results-modal .score-percentage {
+                font-size: 3rem;
+            }
+            .btn-toggle-info {
+                width: 100%;
+                margin-left: 0 !important; /* Override Bootstrap margin */
+                margin-bottom: 10px;
+            }
+            #quiz-navigation button {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container quiz-container">
+        <h2 class="quiz-header">Quiz de Certification Avancé</h2>
+        <p class="text-center text-muted mb-5">Testez vos connaissances avec des questions nuancées et des explications détaillées.</p>
+
+        <div class="score-progress-container">
+            <div class="score-display">
+                <span id="current-score-display">Score: 0 / 0</span>
+            </div>
+            <div class="question-progress-display">
+                <span id="question-count-display">Question: 1 / 5</span>
+                <div class="progress">
+                    <div id="question-progress-bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="quiz-display">
+            <!-- La question actuelle sera chargée dynamiquement ici par JavaScript -->
+            <div class="text-center my-5" id="loading-spinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Chargement des questions...</span>
+                </div>
+                <p class="mt-2 text-muted">Chargement des questions du quiz...</p>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4" id="quiz-navigation">
+            <button id="prev-btn" class="btn btn-primary" disabled>
+                <i class="fas fa-arrow-left me-2"></i> Précédent
+            </button>
+            <button id="next-btn" class="btn btn-primary">
+                Suivant <i class="fas fa-arrow-right ms-2"></i>
+            </button>
+            <!-- Bouton pour afficher les résultats finaux, visible à la fin du quiz -->
+            <button id="final-results-btn" class="btn btn-success" style="display: none;">
+                Résultat Final <i class="fas fa-trophy ms-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal pour les résultats du quiz -->
+    <div class="modal fade results-modal" id="resultsModal" tabindex="-1" aria-labelledby="resultsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resultsModalLabel">Résultats du Quiz</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="score-text">Vous avez répondu correctement à <span id="final-score-correct">0</span> questions sur <span id="final-score-total">0</span>.</p>
+                    <p class="score-percentage" id="final-score-percentage" style="color: #28a745;">0%</p>
+                    <div class="recommendations" id="final-recommendations">
+                        <!-- Recommandations seront insérées ici -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="restart-quiz-btn-modal">
+                        <i class="fas fa-redo me-2"></i> Recommencer le quiz
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lien vers Bootstrap JS Bundle (inclut Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Récupération des éléments HTML par leur ID
+        const quizDisplayDiv = document.getElementById('quiz-display');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const finalResultsBtn = document.getElementById('final-results-btn'); // Nouveau bouton "Résultat Final"
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const quizNavigationDiv = document.getElementById('quiz-navigation');
+        const currentScoreDisplay = document.getElementById('current-score-display');
+        const questionCountDisplay = document.getElementById('question-count-display');
+        const questionProgressBar = document.getElementById('question-progress-bar');
+
+        // Éléments du modal de résultats
+        const resultsModal = new bootstrap.Modal(document.getElementById('resultsModal'));
+        const finalScoreCorrectSpan = document.getElementById('final-score-correct');
+        const finalScoreTotalSpan = document.getElementById('final-score-total');
+        const finalScorePercentage = document.getElementById('final-score-percentage');
+        const finalRecommendationsDiv = document.getElementById('final-recommendations');
+        const restartQuizBtnModal = document.getElementById('restart-quiz-btn-modal');
+
+        // Variables d'état du quiz
+        let currentQuestionIndex = 0; // Index de la question actuelle
+        let questions = []; // Tableau qui contiendra les données du quiz
+        let score = 0; // Score de l'utilisateur
+        // Stocke les réponses de l'utilisateur pour éviter de re-noter et de réactiver les boutons radio
+        // null: non répondu, {selectedOptionIndex: int, isCorrect: bool}: répondu
+        let userAnswers = [];
+
+        // Données du quiz (5 questions complexes comme exemples)
+        // Vous pouvez ajouter jusqu'à 40 questions ou plus ici en suivant ce format.
+        const quizData = {
+            "title": "Quiz de Certification Avancé",
+            "questions": [
+                {
+                    "question": "Selon COBIT 5, quelle est la distinction fondamentale entre la gouvernance et la gestion, et pourquoi cette séparation est-elle cruciale pour la création de valeur TI ?",
+                    "answer_options": [
+                        {"text": "La gouvernance est axée sur la conformité réglementaire, tandis que la gestion se concentre sur l'innovation technologique.", "is_correct": false, "rationale": "Cette affirmation est trop restrictive. La gouvernance et la gestion ont des portées plus larges que la simple conformité ou l'innovation. La gouvernance est plus stratégique et la gestion plus opérationnelle."},
+                        {"text": "La gouvernance concerne la définition des objectifs et la surveillance, tandis que la gestion exécute les activités pour atteindre ces objectifs, assurant ainsi une clarté des rôles et une responsabilisation.", "is_correct": true, "rationale": "COBIT 5 distingue clairement la gouvernance (Évaluer, Diriger, Surveiller - EDM) qui assure que les besoins des parties prenantes sont satisfaits en définissant la direction et en surveillant la performance, de la gestion (Planifier, Bâtir, Exécuter, Surveiller - PBRM) qui exécute les activités pour atteindre les objectifs. Cette séparation est cruciale pour éviter les conflits d'intérêts, clarifier les responsabilités et optimiser la création de valeur en assurant que la bonne direction est donnée et suivie."},
+                        {"text": "La gouvernance est une activité ponctuelle réalisée par le conseil d'administration, alors que la gestion est un processus continu mené par les équipes opérationnelles.", "is_correct": false, "rationale": "Les deux sont des processus continus. La gouvernance n'est pas ponctuelle ; elle est un cycle continu d'évaluation, de direction et de surveillance."},
+                        {"text": "Il n'y a pas de distinction formelle ; les termes sont interchangeables et dépendent du contexte organisationnel.", "is_correct": false, "rationale": "COBIT 5 insiste sur une distinction formelle et claire entre les deux pour une gouvernance et une gestion efficaces des TI."}
+                    ],
+                    "hint": "Pensez aux rôles 'Évaluer, Diriger, Surveiller' et 'Planifier, Bâtir, Exécuter, Surveiller'.",
+                    "key_vocabulary": [
+                        {"term": "Gouvernance des TI", "definition": "Le système par lequel l'utilisation actuelle et future des TI est dirigée et contrôlée. Elle implique l'évaluation des besoins des parties prenantes, la définition des objectifs et la surveillance de la performance."},
+                        {"term": "Gestion des TI", "definition": "La planification, la construction, l'exécution et la surveillance des activités en conformité avec l'orientation définie par l'organisme de gouvernance."},
+                        {"term": "EDM (Evaluate, Direct, Monitor)", "definition": "Domaine de gouvernance de COBIT 5."},
+                        {"term": "PBRM (Plan, Build, Run, Monitor)", "definition": "Domaines de gestion de COBIT 5 (APO, BAI, DSS, MEA)."}
+                    ]
+                },
+                {
+                    "question": "En quoi le principe COBIT 5 'Couvrir l'entreprise de bout en bout' diffère-t-il de 'Appliquer un cadre de référence unique et intégré', et pourquoi les deux sont-ils essentiels pour une gouvernance TI efficace ?",
+                    "answer_options": [
+                        {"text": "'Couvrir l'entreprise de bout en bout' se concentre sur l'intégration des TI dans tous les processus métier, tandis que 'Appliquer un cadre de référence unique et intégré' vise à remplacer tous les autres frameworks TI existants.", "is_correct": false, "rationale": "Le second principe ne vise pas à remplacer les autres frameworks, mais à les intégrer et les harmoniser."},
+                        {"text": "'Couvrir l'entreprise de bout en bout' assure que la gouvernance TI s'étend à toutes les fonctions de l'organisation (horizontale et verticale), tandis que 'Appliquer un cadre de référence unique et intégré' garantit la cohérence et l'interopérabilité des différents standards et frameworks utilisés, évitant la fragmentation.", "is_correct": true, "rationale": "Le principe 'Couvrir l'entreprise de bout en bout' met l'accent sur l'intégration de la gouvernance et de la gestion des TI dans la gouvernance d'entreprise globale, en considérant toutes les fonctions et les acteurs. Le principe 'Appliquer un cadre de référence unique et intégré' se concentre sur l'utilisation d'un cadre cohérent qui peut intégrer et harmoniser d'autres normes et frameworks (comme ITIL, ISO 27001) pour éviter la fragmentation et la duplication des efforts. Les deux sont essentiels car l'un assure l'étendue de l'application et l'autre la cohérence des outils et méthodes."},
+                        {"text": "Le premier est un principe de gestion, le second est un principe de gouvernance.", "is_correct": false, "rationale": "Les deux sont des principes de gouvernance de COBIT 5, s'appliquant à l'ensemble du cadre."},
+                        {"text": "Ils sont interchangeables et décrivent le même concept d'intégration.", "is_correct": false, "rationale": "Bien qu'ils soient tous deux liés à l'intégration, ils abordent des aspects différents : l'étendue de l'intégration organisationnelle et l'intégration des frameworks."}
+                    ],
+                    "hint": "Pensez à la portée (étendue) et à la cohérence (harmonisation des outils).",
+                    "key_vocabulary": [
+                        {"term": "Couvrir l'entreprise de bout en bout", "definition": "Principe de COBIT 5 qui intègre la gouvernance et la gestion des TI dans la gouvernance d'entreprise globale, couvrant toutes les fonctions et les acteurs."},
+                        {"term": "Appliquer un cadre de référence unique et intégré", "definition": "Principe de COBIT 5 qui encourage l'utilisation d'un cadre cohérent et holistique pour la gouvernance et la gestion des TI, intégrant d'autres standards et frameworks."},
+                        {"term": "Framework", "definition": "Un ensemble structuré de lignes directrices, de concepts et de pratiques pour atteindre un objectif spécifique."}
+                    ]
+                },
+                {
+                    "question": "Décrivez comment la 'Cascade d'objectifs' de COBIT 5 permet de traduire les besoins des parties prenantes en objectifs TI mesurables, et pourquoi cela est fondamental pour la création de valeur TI.",
+                    "answer_options": [
+                        {"text": "La cascade d'objectifs est un outil de reporting qui agrège les performances TI pour les présenter aux parties prenantes, sans lien direct avec leurs besoins initiaux.", "is_correct": false, "rationale": "La cascade d'objectifs est un mécanisme de transformation stratégique, pas un simple outil de reporting."},
+                        {"text": "Elle traduit les besoins des parties prenantes en objectifs d'entreprise, puis en objectifs liés aux TI, et enfin en objectifs de facilitateurs, assurant ainsi un alignement bidirectionnel et la création de valeur par les TI.", "is_correct": true, "rationale": "La Cascade d'objectifs est le mécanisme clé de COBIT 5 qui permet de traduire les besoins des parties prenantes (par exemple, la conformité réglementaire, la croissance du chiffre d'affaires) en objectifs d'entreprise (par exemple, la gestion des risques, l'optimisation des coûts), puis en objectifs liés aux TI (par exemple, la sécurité de l'information, la résilience opérationnelle), et enfin en objectifs pour chaque facilitateur (par exemple, des processus efficaces, des compétences adéquates). Ce processus assure que les investissements et les activités TI sont directement alignés sur la stratégie d'entreprise et contribuent à la création de valeur."},
+                        {"text": "La cascade d'objectifs est un processus linéaire qui dicte les objectifs TI sans prendre en compte les retours des parties prenantes après la phase initiale.", "is_correct": false, "rationale": "C'est un processus itératif qui implique une rétroaction continue pour assurer l'alignement."},
+                        {"text": "Elle se concentre principalement sur la réduction des coûts TI en définissant des objectifs financiers stricts pour les départements TI.", "is_correct": false, "rationale": "Bien que l'optimisation des coûts soit un aspect, la cascade d'objectifs est bien plus large et vise la création de valeur globale, pas seulement la réduction des coûts."}
+                    ],
+                    "hint": "Pensez au flux descendant des besoins aux objectifs spécifiques.",
+                    "key_vocabulary": [
+                        {"term": "Cascade d'objectifs", "definition": "Mécanisme de COBIT 5 qui traduit les besoins des parties prenantes en objectifs d'entreprise, puis en objectifs liés aux TI et objectifs de facilitateurs."},
+                        {"term": "Objectifs d'entreprise", "definition": "Les buts et aspirations globaux de l'organisation."},
+                        {"term": "Objectifs liés aux TI", "definition": "La traduction des objectifs d'entreprise en termes de ce que les TI doivent accomplir pour soutenir l'entreprise."},
+                        {"term": "Objectifs de facilitateurs", "definition": "Les objectifs spécifiques que chaque facilitateur (processus, information, personnes, etc.) doit atteindre pour soutenir les objectifs liés aux TI."}
+                    ]
+                },
+                {
+                    "question": "Expliquez comment le facilitateur 'Culture, Éthique et Comportement' influence l'efficacité des autres facilitateurs de COBIT 5 et pourquoi il est souvent le plus difficile à gérer.",
+                    "answer_options": [
+                        {"text": "Ce facilitateur dicte les politiques et procédures formelles, assurant ainsi la conformité automatique des autres facilitateurs.", "is_correct": false, "rationale": "La culture influence, mais ne dicte pas directement les politiques, et elle n'assure pas une conformité automatique."},
+                        {"text": "Il crée un environnement où les autres facilitateurs (processus, structures, information) peuvent être adoptés et fonctionner efficacement, mais sa nature intangible et sa résistance au changement le rendent difficile à influencer directement.", "is_correct": true, "rationale": "La culture, l'éthique et le comportement sont des facilitateurs cruciaux car ils définissent l'attitude générale de l'organisation envers la gouvernance et la gestion des TI. Une culture positive favorise l'adoption des processus, le respect des politiques et l'efficacité des structures. Inversement, une culture négative (résistance au changement, manque de confiance) peut saboter même les meilleurs processus ou technologies. Il est difficile à gérer car il est intangible, profondément enraciné dans les habitudes et les croyances des individus, et ne peut être modifié par de simples décrets ou procédures, nécessitant des efforts de gestion du changement à long terme."},
+                        {"text": "Il est principalement responsable de la gestion des ressources humaines et n'a qu'un impact indirect sur les facilitateurs techniques comme l'infrastructure.", "is_correct": false, "rationale": "Son impact est transversal et affecte tous les facilitateurs, pas seulement les RH."},
+                        {"text": "Son rôle est de s'assurer que les employés sont formés aux nouvelles technologies, ce qui est essentiel pour l'efficacité des applications.", "is_correct": false, "rationale": "Ceci est une partie du facilitateur 'Personnes, Aptitudes et Compétences', pas le rôle principal de la culture."}
+                    ],
+                    "hint": "Pensez à l'aspect humain et à la manière dont les attitudes affectent l'adoption des systèmes.",
+                    "key_vocabulary": [
+                        {"term": "Facilitateur", "definition": "Un facteur qui, individuellement ou collectivement, influence le fait que COBIT 5 soit une réussite pour l'entreprise. Il y a sept types de facilitateurs : Principes, Politiques et Cadres ; Processus ; Structures Organisationnelles ; Culture, Éthique et Comportement ; Information ; Services, Infrastructure et Applications ; Personnes, Aptitudes et Compétences."},
+                        {"term": "Culture d'entreprise", "definition": "L'ensemble des valeurs, croyances, comportements et pratiques partagés au sein d'une organisation."},
+                        {"term": "Gestion du changement", "definition": "L'approche structurée pour faire passer les individus, les équipes et les organisations d'un état actuel à un état futur souhaité."}
+                    ]
+                },
+                {
+                    "question": "Dans le contexte de COBIT 5, comment l'information est-elle considérée non seulement comme un actif, mais aussi comme un facilitateur essentiel, et quelles sont les implications de cette double nature pour sa gouvernance ?",
+                    "answer_options": [
+                        {"text": "L'information est un actif car elle a une valeur financière, et un facilitateur car elle est stockée dans des bases de données.", "is_correct": false, "rationale": "C'est une simplification excessive. Sa valeur va au-delà du financier, et son rôle de facilitateur est plus large que son simple stockage."},
+                        {"text": "L'information est un actif car elle est précieuse pour l'entreprise, et un facilitateur car elle est cruciale pour le fonctionnement de tous les autres facilitateurs (processus, décisions, etc.), exigeant une gouvernance qui assure sa qualité, sa sécurité et sa disponibilité.", "is_correct": true, "rationale": "L'information est un actif car elle a une valeur intrinsèque pour l'entreprise, étant une ressource essentielle pour les opérations et la prise de décision. Elle est également un facilitateur car elle est le 'carburant' qui permet à tous les autres facilitateurs de fonctionner efficacement : les processus se basent sur l'information, les décisions des structures organisationnelles dépendent de la qualité de l'information, et les personnes ont besoin d'informations fiables pour leurs tâches. La gouvernance de l'information doit donc non seulement protéger cet actif (sécurité, intégrité) mais aussi s'assurer qu'elle est pertinente, disponible et de haute qualité pour permettre la création de valeur à travers tous les facilitateurs."},
+                        {"text": "L'information est un actif géré par le département TI, et un facilitateur géré par les utilisateurs finaux.", "is_correct": false, "rationale": "La gouvernance de l'information est une responsabilité partagée à travers l'entreprise, pas seulement par un département."},
+                        {"text": "La double nature de l'information signifie qu'elle est à la fois une donnée brute et un rapport final, sans implication particulière pour sa gouvernance.", "is_correct": false, "rationale": "La double nature est plus profonde que sa forme ; elle concerne son rôle et sa valeur intrinsèque."}
+                    ],
+                    "hint": "Pensez à l'information comme une ressource précieuse et comme un catalyseur pour les opérations.",
+                    "key_vocabulary": [
+                        {"term": "Actif informationnel", "definition": "Toute information ou système qui a de la valeur pour l'organisation."},
+                        {"term": "Qualité de l'information", "definition": "L'exactitude, l'exhaustivité, la pertinence, la fiabilité et la ponctualité de l'information."},
+                        {"term": "Disponibilité de l'information", "definition": "La capacité pour les utilisateurs autorisés d'accéder à l'information et aux actifs associés quand ils en ont besoin."},
+                        {"term": "Sécurité de l'information", "definition": "La protection de la confidentialité, de l'intégrité et de la disponibilité de l'information."}
+                    ]
+                }
+            ]
+        };
+
+        // Initialisation de la taille du tableau userAnswers
+        document.addEventListener('DOMContentLoaded', () => {
+            questions = quizData.questions; // Assigne les données chargées
+            userAnswers = new Array(questions.length).fill(null); // Réinitialise le tableau userAnswers à la bonne taille
+            loadingSpinner.style.display = 'none'; // Masque le spinner de chargement
+            displayQuestion(currentQuestionIndex); // Affiche la première question
+        });
+
+        /**
+         * Affiche une question spécifique dans l'interface utilisateur.
+         * Met à jour les options, l'indice, le raisonnement et le vocabulaire clé.
+         * Applique également le feedback visuel si la question a déjà été répondue.
+         * @param {number} index - L'index de la question à afficher.
+         */
+        function displayQuestion(index) {
+            if (index >= 0 && index < questions.length) {
+                const questionData = questions[index];
+                let optionsHtml = '';
+                questionData.answer_options.forEach((option, i) => {
+                    const isChecked = userAnswers[index] !== null && userAnswers[index].selectedOptionIndex === i;
+                    const isDisabled = userAnswers[index] !== null; // Désactive si déjà répondu
+                    optionsHtml += `
+                        <div class="answer-option ${userAnswers[index] && userAnswers[index].selectedOptionIndex === i ? (option.is_correct ? 'correct' : 'incorrect') : ''}">
+                            <input type="radio" id="option${i}" name="answer" value="${i}" ${isChecked ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
+                            <label for="option${i}">${option.text}</label>
+                        </div>
+                    `;
+                });
+
+                // Génération du HTML pour le vocabulaire clé
+                let vocabularyHtml = '';
+                if (questionData.key_vocabulary && questionData.key_vocabulary.length > 0) {
+                    vocabularyHtml = `
+                        <div class="vocabulary info-section" id="vocabulary-${index}">
+                            <h6>Vocabulaire Clé :</h6>
+                            <ul>
+                                ${questionData.key_vocabulary.map(item => `
+                                    <li><strong>${item.term} :</strong> ${item.definition}</li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                        <button class="btn btn-info btn-toggle-info mt-3 ms-2" data-target-id="vocabulary-${index}" data-info-type="vocabulary">
+                            <i class="fas fa-book me-2"></i> Afficher le vocabulaire
+                        </button>
+                    `;
+                }
+
+                quizDisplayDiv.innerHTML = `
+                    <div class="question-card" id="question-card-${index}">
+                        <h5>${index + 1}. ${questionData.question}</h5>
+                        <div class="options">
+                            ${optionsHtml}
+                        </div>
+                        <div class="rationale info-section" id="rationale-${index}">
+                            <h6>Raisonnement détaillé :</h6>
+                            <ul>
+                                ${questionData.answer_options.map(option => `
+                                    <li>
+                                        <strong>${option.text} :</strong> ${option.rationale}
+                                        ${option.is_correct ? '<i class="fas fa-check-circle text-success ms-2"></i>' : '<i class="fas fa-times-circle text-danger ms-2"></i>'}
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                        <div class="hint info-section" id="hint-${index}">
+                            <h6>Indice :</h6>
+                            <p>${questionData.hint}</p>
+                        </div>
+                        
+                        <div class="d-flex flex-wrap justify-content-start mt-3">
+                            <button class="btn btn-secondary btn-toggle-info mt-3" data-target-id="rationale-${index}" data-info-type="rationale">
+                                <i class="fas fa-info-circle me-2"></i> Afficher l'explication
+                            </button>
+                            <button class="btn btn-info btn-toggle-info mt-3 ms-2" data-target-id="hint-${index}" data-info-type="hint">
+                                <i class="fas fa-lightbulb me-2"></i> Afficher l'indice
+                            </button>
+                            ${vocabularyHtml}
+                        </div>
+                    </div>
+                `;
+
+                updateNavigationButtons(); // Met à jour l'état des boutons de navigation
+                addCurrentQuestionEventListeners(); // Ajoute les écouteurs d'événements pour la question nouvellement rendue
+
+                // Si la question a déjà été répondue, affiche le feedback et le raisonnement
+                if (userAnswers[index] !== null) {
+                    applyFeedback(index, userAnswers[index].selectedOptionIndex, userAnswers[index].isCorrect);
+                    const rationaleDiv = document.getElementById(`rationale-${index}`);
+                    if (rationaleDiv) rationaleDiv.classList.add('show-info');
+                    // Met à jour le texte du bouton de raisonnement
+                    const rationaleBtn = quizDisplayDiv.querySelector('button[data-info-type="rationale"]');
+                    if (rationaleBtn) rationaleBtn.innerHTML = rationaleBtn.innerHTML.replace('Afficher', 'Masquer');
+
+                    // Affiche également le vocabulaire si la question est déjà répondue
+                    const vocabularyDiv = document.getElementById(`vocabulary-${index}`);
+                    if (vocabularyDiv) vocabularyDiv.classList.add('show-info');
+                    const vocabularyBtn = quizDisplayDiv.querySelector('button[data-info-type="vocabulary"]');
+                    if (vocabularyBtn) vocabularyBtn.innerHTML = vocabularyBtn.innerHTML.replace('Afficher', 'Masquer');
+                }
+            } else {
+                console.error("Index de question hors limites :", index);
+            }
+        }
+
+        /**
+         * Applique un feedback visuel aux options de réponse (correct/incorrect).
+         * @param {number} questionIndex - L'index de la question.
+         * @param {number} selectedOptionIndex - L'index de l'option sélectionnée par l'utilisateur.
+         * @param {boolean} isCorrect - Indique si la réponse sélectionnée est correcte.
+         */
+        function applyFeedback(questionIndex, selectedOptionIndex, isCorrect) {
+            const optionsContainer = quizDisplayDiv.querySelector('.options');
+            if (!optionsContainer) return;
+
+            optionsContainer.querySelectorAll('.answer-option').forEach((optionElement, idx) => {
+                optionElement.classList.remove('correct', 'incorrect'); // Efface le feedback précédent
+
+                // Met en évidence la bonne réponse
+                if (questions[questionIndex].answer_options[idx].is_correct) {
+                    optionElement.classList.add('correct');
+                }
+                // Met en évidence la réponse incorrecte sélectionnée
+                if (idx === selectedOptionIndex && !isCorrect) {
+                    optionElement.classList.add('incorrect');
+                }
+            });
+        }
+
+        /**
+         * Ajoute les écouteurs d'événements pour la question actuellement affichée.
+         * Gère la sélection des réponses et l'affichage des informations supplémentaires.
+         */
+        function addCurrentQuestionEventListeners() {
+            const currentQuestionCard = quizDisplayDiv.querySelector('.question-card');
+            const optionsContainer = currentQuestionCard.querySelector('.options');
+
+            // Écouteur d'événement pour la sélection d'une option de réponse (agit comme une soumission)
+            optionsContainer.addEventListener('change', function(event) {
+                if (event.target.type === 'radio') {
+                    const selectedOption = event.target;
+                    const selectedOptionIndex = parseInt(selectedOption.value);
+                    const isCorrect = questions[currentQuestionIndex].answer_options[selectedOptionIndex].is_correct;
+                    
+                    // Si la question n'a pas déjà été répondue, met à jour le score et userAnswers
+                    if (userAnswers[currentQuestionIndex] === null) {
+                        if (isCorrect) {
+                            score++;
+                        }
+                        userAnswers[currentQuestionIndex] = {
+                            selectedOptionIndex: selectedOptionIndex,
+                            isCorrect: isCorrect
+                        };
+                    }
+
+                    // Désactive tous les boutons radio pour la question actuelle
+                    optionsContainer.querySelectorAll('input[type="radio"]').forEach(radio => {
+                        radio.disabled = true;
+                    });
+
+                    applyFeedback(currentQuestionIndex, selectedOptionIndex, isCorrect);
+
+                    // Affiche le raisonnement et le vocabulaire
+                    const rationaleDiv = document.getElementById(`rationale-${currentQuestionIndex}`);
+                    if (rationaleDiv) rationaleDiv.classList.add('show-info');
+                    const vocabularyDiv = document.getElementById(`vocabulary-${currentQuestionIndex}`);
+                    if (vocabularyDiv) vocabularyDiv.classList.add('show-info');
+                    
+                    // Met à jour le texte des boutons d'information
+                    const rationaleBtn = quizDisplayDiv.querySelector('button[data-info-type="rationale"]');
+                    if (rationaleBtn) rationaleBtn.innerHTML = rationaleBtn.innerHTML.replace('Afficher', 'Masquer');
+                    const vocabularyBtn = quizDisplayDiv.querySelector('button[data-info-type="vocabulary"]');
+                    if (vocabularyBtn) vocabularyBtn.innerHTML = vocabularyBtn.innerHTML.replace('Afficher', 'Masquer');
+
+                    updateNavigationButtons(); // Met à jour le score et active le bouton suivant
+                }
+            });
+
+            // Écouteurs d'événements pour les boutons d'indice, de raisonnement et de vocabulaire
+            document.querySelectorAll('.btn-toggle-info').forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetId = this.dataset.targetId;
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        targetElement.classList.toggle('show-info');
+                        
+                        // Change le texte du bouton
+                        if (targetElement.classList.contains('show-info')) {
+                            this.innerHTML = this.innerHTML.replace('Afficher', 'Masquer');
+                        } else {
+                            this.innerHTML = this.innerHTML.replace('Masquer', 'Afficher');
+                        }
+                    }
+                });
+            });
+        }
+
+        /**
+         * Met à jour l'état des boutons de navigation et l'affichage du score/progression.
+         */
+        function updateNavigationButtons() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            
+            // Si c'est la dernière question
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.style.display = 'none'; // Masque le bouton "Suivant"
+                finalResultsBtn.style.display = 'inline-block'; // Affiche le bouton "Résultat Final"
+                // Active le bouton "Résultat Final" uniquement si la dernière question a été répondue
+                finalResultsBtn.disabled = userAnswers[currentQuestionIndex] === null;
+            } else {
+                nextBtn.style.display = 'inline-block'; // Affiche le bouton "Suivant"
+                nextBtn.disabled = userAnswers[currentQuestionIndex] === null; // Désactive "Suivant" si la question actuelle n'est pas répondue
+                finalResultsBtn.style.display = 'none'; // Masque le bouton "Résultat Final"
+            }
+
+            // Met à jour l'affichage du score
+            const answeredCount = userAnswers.filter(answer => answer !== null).length;
+            currentScoreDisplay.textContent = `Score: ${score} / ${answeredCount}`;
+            questionCountDisplay.textContent = `Question: ${currentQuestionIndex + 1} / ${questions.length}`;
+
+            // Met à jour la barre de progression
+            const progressPercentage = ((currentQuestionIndex + 1) / questions.length) * 100;
+            questionProgressBar.style.width = `${progressPercentage}%`;
+            questionProgressBar.setAttribute('aria-valuenow', progressPercentage);
+        }
+
+        /**
+         * Navigue vers la question suivante.
+         * Si c'est la dernière question, affiche les résultats finaux.
+         */
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion(currentQuestionIndex);
+            } else {
+                // Fin du quiz, affiche le modal de résultats
+                displayResults();
+            }
+        }
+
+        /**
+         * Navigue vers la question précédente.
+         */
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion(currentQuestionIndex);
+            }
+        }
+
+        /**
+         * Affiche les résultats finaux du quiz dans un modal Bootstrap.
+         */
+        function displayResults() {
+            quizNavigationDiv.style.display = 'none'; // Masque les boutons de navigation
+
+            const correctAnswers = userAnswers.filter(answer => answer && answer.isCorrect).length;
+            const totalQuestions = questions.length;
+            const percentage = (correctAnswers / totalQuestions) * 100;
+            let recommendationsHtml = '';
+            let scoreColor = '';
+
+            if (percentage >= 80) {
+                scoreColor = '#28a745'; // Vert
+                recommendationsHtml = `
+                    <h4>Félicitations !</h4>
+                    <p>Votre score de ${percentage.toFixed(2)}% est excellent. Vous avez une très bonne maîtrise des concepts.</p>
+                    <ul>
+                        <li>Continuez à réviser les domaines où vous avez eu quelques difficultés mineures.</li>
+                        <li>Pensez à pratiquer avec des examens blancs chronométrés pour vous préparer aux conditions réelles de certification.</li>
+                        <li>Explorez des ressources avancées pour approfondir votre expertise.</li>
+                    </ul>
+                `;
+            } else if (percentage >= 50) {
+                scoreColor = '#ffc107'; // Jaune
+                recommendationsHtml = `
+                    <h4>Bon travail, mais des améliorations sont possibles !</h4>
+                    <p>Votre score de ${percentage.toFixed(2)}% indique une bonne compréhension des bases, mais il y a place à l'amélioration.</p>
+                    <ul>
+                        <li>Revoyez attentivement les questions que vous avez manquées et leurs explications détaillées.</li>
+                        <li>Concentrez-vous sur les domaines thématiques où vous avez rencontré le plus de difficultés.</li>
+                        <li>Utilisez le vocabulaire clé fourni pour renforcer votre compréhension des termes spécifiques.</li>
+                        <li>Refaites ce quiz et d'autres exercices pour consolider vos connaissances.</li>
+                    </ul>
+                `;
+            } else {
+                scoreColor = '#dc3545'; // Rouge
+                recommendationsHtml = `
+                    <h4>Des révisions approfondies sont nécessaires.</h4>
+                    <p>Votre score de ${percentage.toFixed(2)}% indique que des efforts supplémentaires sont requis pour maîtriser les concepts.</p>
+                    <ul>
+                        <li>Reprenez les fondamentaux de chaque concept abordé dans le quiz.</li>
+                        <li>Lisez attentivement les explications et le vocabulaire clé pour chaque question.</li>
+                        <li>N'hésitez pas à consulter des manuels de référence ou des cours en ligne pour une compréhension plus solide.</li>
+                        <li>Pratiquez régulièrement et ne vous découragez pas !</li>
+                    </ul>
+                `;
+            }
+
+            // Remplir le contenu du modal
+            finalScoreCorrectSpan.textContent = correctAnswers;
+            finalScoreTotalSpan.textContent = totalQuestions;
+            finalScorePercentage.textContent = `${percentage.toFixed(2)}%`;
+            finalScorePercentage.style.color = scoreColor;
+            finalRecommendationsDiv.innerHTML = recommendationsHtml;
+
+            // Afficher le modal
+            resultsModal.show();
+        }
+
+        /**
+         * Réinitialise le quiz à son état initial.
+         */
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = new Array(questions.length).fill(null); // Réinitialise les réponses de l'utilisateur
+            quizNavigationDiv.style.display = 'flex'; // Affiche les boutons de navigation
+            resultsModal.hide(); // Masque le modal
+            displayQuestion(currentQuestionIndex); // Commence par la première question
+        }
+
+        // Attache les gestionnaires d'événements aux boutons de navigation
+        nextBtn.addEventListener('click', nextQuestion);
+        prevBtn.addEventListener('click', previousQuestion);
+        finalResultsBtn.addEventListener('click', displayResults); // Attache showResults au nouveau bouton
+        restartQuizBtnModal.addEventListener('click', restartQuiz); // Attache restart au bouton du modal
+    </script>
+</body>
+</html>
