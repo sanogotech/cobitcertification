@@ -1,0 +1,722 @@
+
+        const quizDisplayDiv = document.getElementById('quiz-display');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const quizNavigationDiv = document.getElementById('quiz-navigation');
+        const currentScoreDisplay = document.getElementById('current-score-display');
+        const questionCountDisplay = document.getElementById('question-count-display');
+        const questionProgressBar = document.getElementById('question-progress-bar');
+
+        // Modal elements
+        const resultsModal = new bootstrap.Modal(document.getElementById('resultsModal'));
+        const finalScoreCorrectSpan = document.getElementById('final-score-correct');
+        const finalScoreTotalSpan = document.getElementById('final-score-total');
+        const finalScorePercentage = document.getElementById('final-score-percentage');
+        const finalRecommendationsDiv = document.getElementById('final-recommendations');
+        const restartQuizBtnModal = document.getElementById('restart-quiz-btn-modal');
+
+        let currentQuestionIndex = 0;
+        let questions = []; // This will hold the parsed quiz data
+        let score = 0;
+        // Store answers to prevent re-scoring and re-enabling radio buttons
+        let userAnswers = new Array(40).fill(null); // null: not answered, {selectedOptionIndex: int, isCorrect: bool}: answered
+
+        // Données du quiz COBIT 5 (40 questions) - directement incluses pour la démonstration
+        // En production, vous feriez un fetch vers une URL externe.
+       const quizData = {
+            "title": "Quiz de Certification COBIT 5 (Mode Apprentissage)",
+            "questions": [
+                // Question 1: Principes - Répondre aux besoins des parties prenantes
+                {
+                    "question": "Quel principe de COBIT 5 met l'accent sur la 'Cascade des Objectifs' pour traduire les besoins des parties prenantes en objectifs TI ?",
+                    "answer_options": [
+                        {"text": "Couvrir l'entreprise de bout en bout", "rationale": "Ce principe concerne l'intégration de la gouvernance TI dans toute l'entreprise, pas spécifiquement la cascade des objectifs.", "is_correct": false},
+                        {"text": "Répondre aux besoins des parties prenantes", "rationale": "Le principe 'Répondre aux besoins des parties prenantes' est au cœur de la création de valeur et utilise la cascade des objectifs pour aligner les TI sur les objectifs d'entreprise.", "is_correct": true},
+                        {"text": "Appliquer un cadre intégré unique", "rationale": "Ce principe concerne l'harmonisation de COBIT 5 avec d'autres cadres, pas la cascade des objectifs.", "is_correct": false},
+                        {"text": "Séparer la gouvernance de la gestion", "rationale": "Ce principe distingue les rôles de gouvernance (EDM) et de gestion (PBRM).", "is_correct": false}
+                    ],
+                    "hint": "Ce principe est lié à la raison d'être fondamentale de COBIT 5 : la création de valeur."
+                },
+                // Question 2: Principes - Couvrir l'entreprise de bout en bout
+                {
+                    "question": "Le principe 'Couvrir l'entreprise de bout en bout' de COBIT 5 signifie que :",
+                    "answer_options": [
+                        {"text": "La gouvernance des TI est la seule responsabilité du département informatique.", "rationale": "Faux. Ce principe insiste sur le fait que la gouvernance TI est une responsabilité à l'échelle de l'entreprise.", "is_correct": false},
+                        {"text": "La gouvernance et la gestion des TI s'étendent à toutes les fonctions et processus de l'entreprise.", "rationale": "Vrai. COBIT 5 couvre toutes les informations et technologies, peu importe où elles se trouvent dans l'organisation.", "is_correct": true},
+                        {"text": "COBIT 5 est un cadre uniquement pour les grandes multinationales.", "rationale": "Faux. COBIT 5 est applicable à toutes les tailles et types d'organisations.", "is_correct": false},
+                        {"text": "Les TI doivent fonctionner de manière indépendante des objectifs commerciaux.", "rationale": "Faux. L'alignement TI-métier est un objectif clé de COBIT 5.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à l'étendue de l'application de COBIT 5 au-delà du simple département TI."
+                },
+                // Question 3: Principes - Cadre intégré unique
+                {
+                    "question": "Quel est l'avantage principal d'appliquer un 'cadre intégré unique' comme COBIT 5 ?",
+                    "answer_options": [
+                        {"text": "Il remplace tous les autres cadres de gestion des TI (ITIL, TOGAF, etc.).", "rationale": "Faux. COBIT 5 intègre et complète d'autres cadres, il ne les remplace pas.", "is_correct": false},
+                        {"text": "Il simplifie la gestion en offrant une perspective unique et cohérente de la gouvernance des TI.", "rationale": "Vrai. L'intégration évite la fragmentation et fournit une vue unifiée.", "is_correct": true},
+                        {"text": "Il est applicable uniquement aux aspects financiers de la gouvernance TI.", "rationale": "Faux. COBIT 5 couvre tous les aspects de la gouvernance et de la gestion des TI.", "is_correct": false},
+                        {"text": "Il se concentre exclusivement sur la sécurité de l'information.", "rationale": "Faux. La sécurité est un aspect, mais pas le seul focus.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la cohérence et à l'harmonisation."
+                },
+                // Question 4: Principes - Approche holistique
+                {
+                    "question": "Le principe 'Permettre une approche holistique' de COBIT 5 est principalement soutenu par l'utilisation de :",
+                    "answer_options": [
+                        {"text": "La cascade des objectifs", "rationale": "La cascade des objectifs est liée au principe 'Répondre aux besoins des parties prenantes'.", "is_correct": false},
+                        {"text": "Les 5 domaines de processus", "rationale": "Les domaines de processus décrivent les activités, mais l'approche holistique est plus large.", "is_correct": false},
+                        {"text": "Les 7 facilitateurs (Enablers)", "rationale": "Vrai. Les facilitateurs sont les facteurs qui, collectivement, permettent une gouvernance et une gestion des TI réussies, offrant une vue holistique.", "is_correct": true},
+                        {"text": "Les indicateurs clés de performance (KPI)", "rationale": "Les KPI sont des mesures de performance, pas des éléments qui permettent une approche holistique en soi.", "is_correct": false}
+                    ],
+                    "hint": "Ces éléments sont les 'ingrédients' nécessaires à la mise en œuvre de la gouvernance."
+                },
+                // Question 5: Principes - Séparer gouvernance/gestion
+                {
+                    "question": "Quelle est la distinction clé entre la gouvernance et la gestion selon COBIT 5 ?",
+                    "answer_options": [
+                        {"text": "La gouvernance est 'Planifier, Construire, Exécuter, Surveiller' (PBER) et la gestion est 'Évaluer, Diriger, Surveiller' (EDM).", "rationale": "Faux. C'est l'inverse.", "is_correct": false},
+                        {"text": "La gouvernance est 'Évaluer, Diriger, Surveiller' (EDM) et la gestion est 'Planifier, Construire, Exécuter, Surveiller' (PBER).", "rationale": "Vrai. EDM est le domaine de la gouvernance, tandis que PBER sont les domaines de la gestion.", "is_correct": true},
+                        {"text": "La gouvernance est pour le conseil d'administration, la gestion est pour les utilisateurs finaux.", "rationale": "Faux. La gestion est pour la direction exécutive et le personnel TI, pas seulement les utilisateurs finaux.", "is_correct": false},
+                        {"text": "Il n'y a pas de distinction claire, les termes sont interchangeables.", "rationale": "Faux. COBIT 5 insiste sur une distinction claire.", "is_correct": false}
+                    ],
+                    "hint": "Pensez aux acronymes EDM et PBER."
+                },
+                // Question 6: Facilitateurs - Principes, Politiques et Cadres
+                {
+                    "question": "Le facilitateur 'Principes, Politiques et Cadres' a pour but de :",
+                    "answer_options": [
+                        {"text": "Définir les rôles et responsabilités au sein de l'organisation.", "rationale": "Ceci est le rôle des Structures Organisationnelles.", "is_correct": false},
+                        {"text": "Traduire le comportement souhaité en orientations pratiques pour la gestion quotidienne.", "rationale": "Vrai. Ils fournissent les règles et lignes directrices qui façonnent l'approche de la gouvernance et de la gestion des TI.", "is_correct": true},
+                        {"text": "Gérer les ressources humaines des TI.", "rationale": "Ceci est le rôle du facilitateur 'Personnes, Compétences et Expertise'.", "is_correct": false},
+                        {"text": "Assurer la disponibilité des services TI.", "rationale": "Ceci est le rôle des Services, Infrastructure et Applications, ainsi que des processus DSS.", "is_correct": false}
+                    ],
+                    "hint": "Ces éléments sont les 'fondations' ou les 'règles' de la gouvernance."
+                },
+                // Question 7: Facilitateurs - Processus
+                {
+                    "question": "Quel est le rôle des 'Processus' en tant que facilitateur COBIT 5 ?",
+                    "answer_options": [
+                        {"text": "Ils représentent les attitudes et valeurs de l'organisation.", "rationale": "Ceci est le rôle de la Culture, Éthique et Comportement.", "is_correct": false},
+                        {"text": "Ils décrivent un ensemble de pratiques et d'activités pour atteindre des objectifs spécifiques et produire des résultats.", "rationale": "Vrai. Les processus sont la manière dont les activités TI sont exécutées pour atteindre les objectifs.", "is_correct": true},
+                        {"text": "Ils sont les outils logiciels utilisés par les TI.", "rationale": "Ceci est une partie des Services, Infrastructure et Applications.", "is_correct": false},
+                        {"text": "Ils définissent les objectifs stratégiques de l'entreprise.", "rationale": "Ceci est fait par la gouvernance et la cascade des objectifs.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la façon dont les tâches sont effectuées de manière structurée."
+                },
+                // Question 8: Facilitateurs - Structures Organisationnelles
+                {
+                    "question": "Les 'Structures Organisationnelles' en tant que facilitateur COBIT 5 incluent principalement :",
+                    "answer_options": [
+                        {"text": "Les systèmes d'information et les bases de données.", "rationale": "Ceci fait partie du facilitateur 'Information' et 'Services, Infrastructure et Applications'.", "is_correct": false},
+                        {"text": "Les entités décisionnelles clés, les rôles et les lignes hiérarchiques.", "rationale": "Vrai. Elles définissent qui prend les décisions et qui est responsable des activités liées aux TI.", "is_correct": true},
+                        {"text": "Les compétences individuelles du personnel TI.", "rationale": "Ceci fait partie du facilitateur 'Personnes, Compétences et Expertise'.", "is_correct": false},
+                        {"text": "Les procédures opérationnelles standard.", "rationale": "Ceci fait partie du facilitateur 'Processus'.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à l'organigramme et aux comités de direction."
+                },
+                // Question 9: Facilitateurs - Culture, Éthique et Comportement
+                {
+                    "question": "Pourquoi le facilitateur 'Culture, Éthique et Comportement' est-il considéré comme crucial pour la réussite de la gouvernance des TI ?",
+                    "answer_options": [
+                        {"text": "Il détermine directement les budgets des projets TI.", "rationale": "Faux. Les budgets sont gérés par les processus APO06.", "is_correct": false},
+                        {"text": "Il influence la réussite ou l'échec des initiatives de gouvernance des TI en façonnant les attitudes et les actions.", "rationale": "Vrai. Une culture forte et éthique est fondamentale pour l'adhésion et l'efficacité des contrôles.", "is_correct": true},
+                        {"text": "Il est responsable de la maintenance technique de l'infrastructure TI.", "rationale": "Ceci est le rôle des Services, Infrastructure et Applications et des processus DSS.", "is_correct": false},
+                        {"text": "Il assure la conformité réglementaire externe de manière isolée.", "rationale": "Faux. La conformité est un effort collectif et est surveillée par les processus MEA.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à l'élément humain et aux valeurs partagées."
+                },
+                // Question 10: Facilitateurs - Information
+                {
+                    "question": "Le facilitateur 'Information' dans COBIT 5 se concentre sur :",
+                    "answer_options": [
+                        {"text": "Le matériel et les logiciels des TI.", "rationale": "Ceci est le rôle des Services, Infrastructure et Applications.", "is_correct": false},
+                        {"text": "Les données et les connaissances produites et consommées par l'entreprise, en assurant leur qualité, disponibilité et sécurité.", "rationale": "Vrai. L'information est un actif clé qui doit être gouverné et géré efficacement.", "is_correct": true},
+                        {"text": "La formation et le développement du personnel TI.", "rationale": "Ceci est le rôle des Personnes, Compétences et Expertise.", "is_correct": false},
+                        {"text": "La définition des objectifs stratégiques de l'entreprise.", "rationale": "Ceci est le rôle de la gouvernance.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à l'actif le plus précieux d'une entreprise dans l'ère numérique."
+                },
+                // Question 11: Facilitateurs - Services, Infrastructure et Applications
+                {
+                    "question": "Quel est le rôle du facilitateur 'Services, Infrastructure et Applications' ?",
+                    "answer_options": [
+                        {"text": "Il gère les relations avec les fournisseurs externes.", "rationale": "Ceci est le rôle d'APO10: Gérer les fournisseurs.", "is_correct": false},
+                        {"text": "Il représente les composants tangibles du système informatique qui fournissent la base technologique des opérations de l'organisation.", "rationale": "Vrai. Cela inclut tout ce qui est matériel, logiciel et réseau qui soutient les services TI.", "is_correct": true},
+                        {"text": "Il définit les politiques de sécurité de l'information.", "rationale": "Ceci est le rôle des Principes, Politiques et Cadres, et des processus de sécurité.", "is_correct": false},
+                        {"text": "Il est responsable de l'audit interne des processus TI.", "rationale": "Ceci est le rôle des processus MEA.", "is_correct": false}
+                    ],
+                    "hint": "Pensez aux 'outils' et 'plateformes' sur lesquels les TI s'appuient."
+                },
+                // Question 12: Facilitateurs - Personnes, Compétences et Expertise
+                {
+                    "question": "Le facilitateur 'Personnes, Compétences et Expertise' souligne l'importance de :",
+                    "answer_options": [
+                        {"text": "La documentation technique des systèmes TI.", "rationale": "Ceci fait partie du facilitateur 'Information'.", "is_correct": false},
+                        {"text": "La gestion financière des investissements TI.", "rationale": "Ceci est le rôle des processus APO06.", "is_correct": false},
+                        {"text": "L'acquisition, la formation et la rétention du personnel compétent nécessaire à la fonction TI.", "rationale": "Vrai. Le capital humain est essentiel pour la mise en œuvre et le fonctionnement efficace de la gouvernance et de la gestion des TI.", "is_correct": true},
+                        {"text": "La conformité aux réglementations externes.", "rationale": "Ceci est le rôle des processus MEA03.", "is_correct": false}
+                    ],
+                    "hint": "Pensez au 'capital humain' derrière les TI."
+                },
+                // Question 13: Processus EDM - Rôle général
+                {
+                    "question": "Quel est l'objectif principal du domaine de processus EDM (Évaluer, Diriger et Surveiller) ?",
+                    "answer_options": [
+                        {"text": "Développer et implémenter des solutions TI.", "rationale": "Ceci est le rôle du domaine BAI.", "is_correct": false},
+                        {"text": "Gérer les opérations quotidiennes des services TI.", "rationale": "Ceci est le rôle du domaine DSS.", "is_correct": false},
+                        {"text": "Assurer que l'entreprise évalue les besoins, définit la direction et surveille la performance des TI.", "rationale": "Vrai. EDM est le domaine de la gouvernance, axé sur la prise de décision stratégique et la surveillance.", "is_correct": true},
+                        {"text": "Aligner la stratégie TI avec la stratégie d'entreprise.", "rationale": "Ceci est le rôle du domaine APO.", "is_correct": false}
+                    ],
+                    "hint": "Pensez aux responsabilités du conseil d'administration."
+                },
+                // Question 14: Processus EDM02
+                {
+                    "question": "Le processus EDM02 de COBIT 5, 'Assurer la livraison des bénéfices', se concentre sur :",
+                    "answer_options": [
+                        {"text": "La gestion des risques liés aux TI.", "rationale": "Ceci est le rôle d'EDM03.", "is_correct": false},
+                        {"text": "L'optimisation de la valeur tirée des investissements et services informatiques.", "rationale": "Vrai. Ce processus garantit que les TI apportent la valeur attendue à l'entreprise.", "is_correct": true},
+                        {"text": "La gestion des ressources humaines des TI.", "rationale": "Ceci est le rôle d'APO07.", "is_correct": false},
+                        {"text": "La définition du cadre de gouvernance des TI.", "rationale": "Ceci est le rôle d'EDM01.", "is_correct": false}
+                    ],
+                    "hint": "Pensez au 'retour sur investissement' des TI."
+                },
+                // Question 15: Processus APO - Rôle général
+                {
+                    "question": "Quel est le rôle principal du domaine de processus APO (Aligner, Planifier et Organiser) ?",
+                    "answer_options": [
+                        {"text": "Surveiller la conformité aux réglementations externes.", "rationale": "Ceci est le rôle du domaine MEA.", "is_correct": false},
+                        {"text": "Définir, acquérir et implémenter des solutions TI.", "rationale": "Ceci est le rôle du domaine BAI.", "is_correct": false},
+                        {"text": "Aligner les TI avec la stratégie de l'entreprise, et planifier et organiser les ressources TI.", "rationale": "Vrai. APO est le domaine de la gestion axé sur la stratégie et la préparation des ressources.", "is_correct": true},
+                        {"text": "Fournir des services TI aux utilisateurs finaux.", "rationale": "Ceci est le rôle du domaine DSS.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la phase de 'préparation' avant l'action."
+                },
+                // Question 16: Processus APO02
+                {
+                    "question": "Le processus APO02 de COBIT 5, 'Gérer la stratégie', a pour objectif de :",
+                    "answer_options": [
+                        {"text": "Gérer le portefeuille de projets TI.", "rationale": "Ceci est le rôle d'APO05.", "is_correct": false},
+                        {"text": "Définir et communiquer la stratégie et la feuille de route des TI en alignement avec les objectifs de l'entreprise.", "rationale": "Vrai. Ce processus assure que la direction des TI soutient la création de valeur pour l'organisation.", "is_correct": true},
+                        {"text": "Gérer les risques liés aux TI.", "rationale": "Ceci est le rôle d'APO12.", "is_correct": false},
+                        {"text": "Acquérir et former le personnel TI.", "rationale": "Ceci est le rôle d'APO07.", "is_correct": false}
+                    ],
+                    "hint": "C'est le processus qui donne une direction claire aux TI."
+                },
+                // Question 17: Processus BAI - Rôle général
+                {
+                    "question": "Quel est le rôle principal du domaine de processus BAI (Construire, Acquérir et Implémenter) ?",
+                    "answer_options": [
+                        {"text": "Surveiller l'efficacité du système de contrôle interne.", "rationale": "Ceci est le rôle du domaine MEA.", "is_correct": false},
+                        {"text": "Définir, acquérir et implémenter des solutions TI et les intégrer dans les processus métier.", "rationale": "Vrai. BAI couvre le développement, l'approvisionnement et le déploiement des services et solutions TI.", "is_correct": true},
+                        {"text": "Gérer les relations avec les parties prenantes.", "rationale": "Ceci est le rôle du domaine APO.", "is_correct": false},
+                        {"text": "Gérer les incidents et les requêtes de service.", "rationale": "Ceci est le rôle du domaine DSS.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la phase de 'réalisation' ou de 'construction'."
+                },
+                // Question 18: Processus BAI06
+                {
+                    "question": "Le processus BAI06 de COBIT 5, 'Gérer les changements', a pour objectif de :",
+                    "answer_options": [
+                        {"text": "Définir les exigences métier pour les solutions TI.", "rationale": "Ceci est le rôle de BAI02.", "is_correct": false},
+                        {"text": "S'assurer que tous les changements apportés à l'infrastructure, aux applications et aux processus TI sont contrôlés et enregistrés.", "rationale": "Vrai. Ce processus minimise les interruptions de service et assure la traçabilité des modifications.", "is_correct": true},
+                        {"text": "Gérer les programmes et les projets TI.", "rationale": "Ceci est le rôle de BAI01.", "is_correct": false},
+                        {"text": "Gérer la disponibilité et la capacité des ressources TI.", "rationale": "Ceci est le rôle de BAI04.", "is_correct": false}
+                    ],
+                    "hint": "Ce processus est crucial pour la stabilité et la traçabilité des évolutions."
+                },
+                // Question 19: Processus DSS - Rôle général
+                {
+                    "question": "Quel est le rôle principal du domaine de processus DSS (Livrer, Servir et Soutenir) ?",
+                    "answer_options": [
+                        {"text": "Planifier les ressources humaines des TI.", "rationale": "Ceci est le rôle du domaine APO.", "is_correct": false},
+                        {"text": "Définir l'architecture d'entreprise.", "rationale": "Ceci est le rôle du domaine APO.", "is_correct": false},
+                        {"text": "Gérer la livraison opérationnelle et le support des services TI.", "rationale": "Vrai. DSS couvre les opérations quotidiennes, la sécurité, la continuité et la gestion des incidents.", "is_correct": true},
+                        {"text": "Évaluer la performance des processus TI.", "rationale": "Ceci est le rôle du domaine MEA.", "is_correct": false}
+                    ],
+                    "hint": "Pensez aux activités 'quotidiennes' et de 'service client' des TI."
+                },
+                // Question 20: Processus DSS02
+                {
+                    "question": "Le processus DSS02 de COBIT 5, 'Gérer les requêtes de service et les incidents', est responsable de :",
+                    "answer_options": [
+                        {"text": "La gestion de la continuité des services TI.", "rationale": "Ceci est le rôle de DSS04.", "is_correct": false},
+                        {"text": "La gestion des problèmes et de leurs causes profondes.", "rationale": "Ceci est le rôle de DSS03.", "is_correct": false},
+                        {"text": "La gestion des demandes des utilisateurs et la résolution rapide des interruptions de service.", "rationale": "Vrai. Ce processus assure que les demandes et les incidents sont traités efficacement pour minimiser l'impact sur les utilisateurs.", "is_correct": true},
+                        {"text": "La gestion des services de sécurité.", "rationale": "Ceci est le rôle de DSS05.", "is_correct": false}
+                    ],
+                    "hint": "Pensez au 'help desk' ou au 'support technique'."
+                },
+                // Question 21: Processus MEA - Rôle général
+                {
+                    "question": "Quel est le rôle principal du domaine de processus MEA (Surveiller, Évaluer et Examiner) ?",
+                    "answer_options": [
+                        {"text": "Construire de nouvelles applications logicielles.", "rationale": "Ceci est le rôle du domaine BAI.", "is_correct": false},
+                        {"text": "Surveiller et évaluer la performance des TI par rapport aux plans et objectifs, et assurer la conformité.", "rationale": "Vrai. MEA est le domaine de la gestion axé sur la vérification et l'assurance.", "is_correct": true},
+                        {"text": "Gérer les relations avec les fournisseurs.", "rationale": "Ceci est le rôle du domaine APO.", "is_correct": false},
+                        {"text": "Fournir un support technique aux utilisateurs.", "rationale": "Ceci est le rôle du domaine DSS.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la 'surveillance' et à l''audit'."
+                },
+                // Question 22: Processus MEA01
+                {
+                    "question": "Le processus MEA01 de COBIT 5, 'Surveiller, Évaluer et Examiner la performance et la conformité', implique :",
+                    "answer_options": [
+                        {"text": "La définition des objectifs stratégiques des TI.", "rationale": "Ceci est le rôle d'APO02.", "is_correct": false},
+                        {"text": "La mesure des processus TI par rapport aux objectifs et la conformité aux exigences internes et externes.", "rationale": "Vrai. Ce processus s'assure que les TI sont efficaces et respectent les règles.", "is_correct": true},
+                        {"text": "La gestion des risques TI.", "rationale": "Ceci est le rôle d'APO12 ou EDM03.", "is_correct": false},
+                        {"text": "La gestion des changements dans l'infrastructure TI.", "rationale": "Ceci est le rôle de BAI06.", "is_correct": false}
+                    ],
+                    "hint": "C'est le processus qui répond à la question : 'Faisons-nous ce que nous avons dit que nous ferions ?'"
+                },
+                // Question 23: Cycle d'Implémentation - Phase 1
+                {
+                    "question": "Quelle est la première phase du cycle d'implémentation de COBIT 5 ?",
+                    "answer_options": [
+                        {"text": "Où en sommes-nous maintenant ?", "rationale": "C'est la phase 2.", "is_correct": false},
+                        {"text": "Quel est le moteur ?", "rationale": "Vrai. Cette phase consiste à identifier les points de douleur et les déclencheurs de changement.", "is_correct": true},
+                        {"text": "Où voulons-nous aller ?", "rationale": "C'est la phase 3.", "is_correct": false},
+                        {"text": "Qu'est-ce qui doit être fait ?", "rationale": "C'est la phase 4.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la question initiale qui motive tout projet."
+                },
+                // Question 24: Cycle d'Implémentation - Phase 5
+                {
+                    "question": "Dans le cycle d'implémentation de COBIT 5, la phase 'Comment y arriverons-nous ?' correspond à :",
+                    "answer_options": [
+                        {"text": "La planification des actions.", "rationale": "Ceci est la phase 4.", "is_correct": false},
+                        {"text": "L'implémentation des solutions et des changements.", "rationale": "Vrai. C'est la phase d'exécution où les plans sont mis en œuvre.", "is_correct": true},
+                        {"text": "La surveillance de la performance.", "rationale": "Ceci est la phase 6.", "is_correct": false},
+                        {"text": "La reconnaissance du besoin.", "rationale": "Ceci est la phase 1.", "is_correct": false}
+                    ],
+                    "hint": "C'est la phase où l'on 'fait' le travail."
+                },
+                // Question 25: Cascade des Objectifs
+                {
+                    "question": "La 'Cascade des Objectifs' dans COBIT 5 est un mécanisme pour :",
+                    "answer_options": [
+                        {"text": "Gérer les risques TI de manière isolée.", "rationale": "Faux. La cascade est pour l'alignement, pas la gestion des risques isolée.", "is_correct": false},
+                        {"text": "Traduire les besoins des parties prenantes en objectifs d'entreprise, puis en objectifs TI et facilitateurs.", "rationale": "Vrai. Elle assure un alignement de haut en bas et de bas en haut.", "is_correct": true},
+                        {"text": "Définir les rôles et responsabilités du personnel TI.", "rationale": "Ceci est lié aux structures organisationnelles.", "is_correct": false},
+                        {"text": "Mesurer la maturité des processus TI.", "rationale": "Ceci est fait par les modèles de maturité.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la façon dont les objectifs 'descendent' et 'remontent' dans l'organisation."
+                },
+                // Question 26: Critères d'Information (GOODIC)
+                {
+                    "question": "Selon COBIT 5, lequel de ces critères n'est PAS un critère d'information clé (GOODIC) ?",
+                    "answer_options": [
+                        {"text": "Qualité intrinsèque (Good)", "rationale": "C'est un critère (G).", "is_correct": false},
+                        {"text": "Coût (Cost)", "rationale": "Vrai. Le coût n'est pas un critère direct de qualité de l'information dans GOODIC, bien qu'il soit une considération de gestion.", "is_correct": true},
+                        {"text": "Disponibilité (Obtainable)", "rationale": "C'est un critère (O).", "is_correct": false},
+                        {"text": "Sécurité (Defendable)", "rationale": "C'est un critère (D).", "is_correct": false}
+                    ],
+                    "hint": "Pensez à l'acronyme GOODIC et à ce qu'il représente."
+                },
+                // Question 27: Objectifs Liés aux TI (Perspectives)
+                {
+                    "question": "Les objectifs liés aux TI dans COBIT 5 se déclinent en plusieurs perspectives. Laquelle ne fait PAS partie des 4 perspectives principales ?",
+                    "answer_options": [
+                        {"text": "Perspective financière", "rationale": "C'est une perspective.", "is_correct": false},
+                        {"text": "Perspective client", "rationale": "C'est une perspective.", "is_correct": false},
+                        {"text": "Perspective des fournisseurs", "rationale": "Vrai. Les 4 perspectives sont Financière, Client, Interne, et Apprentissage & Croissance.", "is_correct": true},
+                        {"text": "Perspective d'apprentissage et de croissance", "rationale": "C'est une perspective.", "is_correct": false}
+                    ],
+                    "hint": "Ces perspectives sont souvent comparées à celles d'un Balanced Scorecard."
+                },
+                // Question 28: KGI vs KPI
+                {
+                    "question": "Quelle est la principale différence entre un KGI (Key Goal Indicator) et un KPI (Key Performance Indicator) selon COBIT 5 ?",
+                    "answer_options": [
+                        {"text": "Les KGI mesurent la performance des processus, tandis que les KPI mesurent si les objectifs sont atteints.", "rationale": "Faux. C'est l'inverse.", "is_correct": false},
+                        {"text": "Les KGI mesurent si les objectifs sont atteints (résultats), tandis que les KPI mesurent la performance des processus (activités).", "rationale": "Vrai. Les KGI sont des indicateurs de résultat, les KPI sont des indicateurs de performance de l'activité.", "is_correct": true},
+                        {"text": "Les KGI sont pour la gouvernance, les KPI sont pour la gestion.", "rationale": "Faux. Les deux sont utilisés à différents niveaux de la gouvernance et de la gestion.", "is_correct": false},
+                        {"text": "Les KGI sont qualitatifs, les KPI sont quantitatifs.", "rationale": "Faux. Les deux peuvent être qualitatifs ou quantitatifs.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à 'Goal' (objectif) et 'Performance'."
+                },
+                // Question 29: ISO/IEC 38500
+                {
+                    "question": "Quel est le lien entre COBIT 5 et la norme ISO/IEC 38500 ?",
+                    "answer_options": [
+                        {"text": "ISO/IEC 38500 est un cadre de gestion des services TI détaillé, intégré par COBIT 5.", "rationale": "Faux. ISO/IEC 38500 est une norme de gouvernance, pas de gestion des services (comme ITIL).", "is_correct": false},
+                        {"text": "COBIT 5 est une norme qui remplace ISO/IEC 38500.", "rationale": "Faux. COBIT 5 est un cadre, ISO/IEC 38500 est une norme. Ils sont complémentaires.", "is_correct": false},
+                        {"text": "ISO/IEC 38500 fournit des principes pour la bonne gouvernance des TI, et COBIT 5 est un cadre qui aide à implémenter ces principes.", "rationale": "Vrai. ISO 38500 donne le 'quoi' et COBIT 5 le 'comment'.", "is_correct": true},
+                        {"text": "Ils sont des cadres concurrents avec des objectifs similaires but des approches différentes.", "rationale": "Faux. Ils sont complémentaires.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la relation entre une 'norme' de principes et un 'cadre' de mise en œuvre."
+                },
+                // Question 30: Niveaux de Capacité des Processus
+                {
+                    "question": "Quel niveau de capacité de processus (selon le modèle COBIT 5) indique qu'un processus est 'géré' ?",
+                    "answer_options": [
+                        {"text": "Niveau 0 (Incomplet)", "rationale": "Niveau 0 signifie que le processus n'est pas implémenté ou ne parvient pas à atteindre son objectif.", "is_correct": false},
+                        {"text": "Niveau 1 (Exécuté)", "rationale": "Niveau 1 signifie que le processus est implémenté et atteint son objectif.", "is_correct": false},
+                        {"text": "Niveau 2 (Géré)", "rationale": "Vrai. Au niveau 2, le processus est planifié, surveillé, ajusté et les résultats sont établis et contrôlés.", "is_correct": true},
+                        {"text": "Niveau 3 (Établi)", "rationale": "Niveau 3 signifie que le processus est défini et mis en œuvre en utilisant des processus standardisés.", "is_correct": false}
+                    ],
+                    "hint": "Pensez au niveau où le processus commence à être contrôlé et suivi."
+                },
+                // Question 31: Appétit au Risque
+                {
+                    "question": "Dans le contexte de la gestion des risques TI selon COBIT 5, qu'est-ce que l'appétit au risque ?",
+                    "answer_options": [
+                        {"text": "Le niveau de risque réel auquel l'entreprise est exposée.", "rationale": "Ceci est le profil de risque actuel.", "is_correct": false},
+                        {"text": "Le niveau de risque qu'une organisation est prête à prendre pour atteindre ses objectifs.", "rationale": "Vrai. C'est la quantité de risque qu'une entité est prête à accepter.", "is_correct": true},
+                        {"text": "La capacité de l'entreprise à absorber les pertes liées aux risques.", "rationale": "Ceci est lié à la capacité de risque.", "is_correct": false},
+                        {"text": "Les mesures prises pour réduire les risques.", "rationale": "Ceci fait partie de la réponse au risque.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la 'quantité' de risque qu'une entreprise est 'prête' à accepter."
+                },
+                // Question 32: Indicateurs Clés de Risque (KRI)
+                {
+                    "question": "À quoi servent les Indicateurs Clés de Risque (KRI) dans COBIT 5 ?",
+                    "answer_options": [
+                        {"text": "À mesurer la performance des processus TI.", "rationale": "Ceci est le rôle des KPI.", "is_correct": false},
+                        {"text": "À indiquer une exposition croissante ou décroissante à un risque.", "rationale": "Vrai. Les KRI sont des signaux d'alerte précoce pour la gestion des risques.", "is_correct": true},
+                        {"text": "À évaluer la maturité des contrôles TI.", "rationale": "Ceci est fait par l'évaluation des contrôles.", "is_correct": false},
+                        {"text": "À définir les objectifs stratégiques de l'entreprise.", "rationale": "Ceci est le rôle de la gouvernance.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à des 'signaux' qui indiquent un changement dans le niveau de risque."
+                },
+                // Question 33: Gestion de la Réalisation des Bénéfices (BRM)
+                {
+                    "question": "Quel est le rôle de la Gestion de la Réalisation des Bénéfices (BRM) dans COBIT 5 ?",
+                    "answer_options": [
+                        {"text": "Définir les exigences techniques pour les systèmes TI.", "rationale": "Ceci est le rôle de BAI02.", "is_correct": false},
+                        {"text": "Gérer le processus par lequel la valeur est créée, mesurée et suivie à partir des investissements TI.", "rationale": "Vrai. BRM s'assure que les investissements TI livrent la valeur attendue.", "is_correct": true},
+                        {"text": "Surveiller la conformité aux lois et réglementations.", "rationale": "Ceci est le rôle de MEA03.", "is_correct": false},
+                        {"text": "Gérer les incidents de sécurité.", "rationale": "Ceci est le rôle de DSS05 et DSS02.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la 'valeur' que les TI apportent à l'entreprise."
+                },
+                // Question 34: Gouvernance des TI d'Entreprise (GEIT)
+                {
+                    "question": "Que représente l'acronyme GEIT dans le contexte de COBIT 5 ?",
+                    "answer_options": [
+                        {"text": "Global Enterprise Information Technology", "rationale": "Ce n'est pas l'acronyme correct.", "is_correct": false},
+                        {"text": "Gouvernance des TI d'Entreprise", "rationale": "Vrai. GEIT est le système par lequel la gouvernance des TI est intégrée à la gouvernance globale de l'entreprise.", "is_correct": true},
+                        {"text": "Gestion de l'Expérience Utilisateur des TI", "rationale": "Ce n'est pas l'acronyme correct.", "is_correct": false},
+                        {"text": "Gestion des Engagements et des Innovations Technologiques", "rationale": "Ce n'est pas l'acronyme correct.", "is_correct": false}
+                    ],
+                    "hint": "C'est l'objectif global de COBIT 5."
+                },
+                // Question 35: Relation COBIT 5 et ITIL
+                {
+                    "question": "Comment COBIT 5 se positionne-t-il par rapport à ITIL ?",
+                    "answer_options": [
+                        {"text": "COBIT 5 est un cadre de gestion des services TI, tandis qu'ITIL est un cadre de gouvernance.", "rationale": "Faux. C'est l'inverse.", "is_correct": false},
+                        {"text": "COBIT 5 se concentre sur 'ce qui doit être fait' (gouvernance), tandis qu'ITIL se concentre sur 'comment le faire' (gestion des services).", "rationale": "Vrai. Ils sont complémentaires, COBIT 5 fournit le cadre de gouvernance et ITIL les meilleures pratiques pour la gestion opérationnelle des services.", "is_correct": true},
+                        {"text": "Ils sont des cadres concurrents et ne peuvent pas être utilisés ensemble.", "rationale": "Faux. Ils sont conçus pour être complémentaires.", "is_correct": false},
+                        {"text": "COBIT 5 est une version obsolète d'ITIL.", "rationale": "Faux. Ce sont des cadres distincts.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la distinction entre 'quoi' et 'comment'."
+                },
+                // Question 36: Relation COBIT 5 et ISO/IEC 27000
+                {
+                    "question": "Quel est le rapport entre COBIT 5 et la famille de normes ISO/IEC 27000 (sécurité de l'information) ?",
+                    "answer_options": [
+                        {"text": "COBIT 5 est une norme de sécurité de l'information, et ISO 27000 est un cadre de gouvernance.", "rationale": "Faux. C'est l'inverse pour leur rôle principal.", "is_correct": false},
+                        {"text": "COBIT 5 fournit le cadre de gouvernance pour la sécurité de l'information, tandis qu'ISO 27000 fournit les spécifications pour un système de gestion de la sécurité de l'information (SMSI).", "rationale": "Vrai. COBIT 5 aide à gouverner la sécurité, et ISO 27000 aide à la gérer et la certifier.", "is_correct": true},
+                        {"text": "Ils sont mutuellement exclusifs et ne peuvent pas être implémentés simultanément.", "rationale": "Faux. Ils sont conçus pour être complémentaires.", "is_correct": false},
+                        {"text": "ISO 27000 est une version plus récente et améliorée de COBIT 5 pour la sécurité.", "rationale": "Faux. Ce sont des cadres/normes distincts avec des objectifs différents.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la gouvernance (COBIT) par rapport à la mise en œuvre (ISO)."
+                },
+                // Question 37: Rôles Clés dans la Gouvernance des TI
+                {
+                    "question": "Quel rôle est principalement responsable des activités 'Évaluer, Diriger et Surveiller' (EDM) dans la gouvernance des TI ?",
+                    "answer_options": [
+                        {"text": "Le DSI (CIO)", "rationale": "Le DSI est plus impliqué dans la gestion (APO, BAI, DSS, MEA).", "is_correct": false},
+                        {"text": "Le personnel opérationnel des TI", "rationale": "Le personnel opérationnel est impliqué dans les processus DSS.", "is_correct": false},
+                        {"text": "Le Conseil d'administration et la Direction exécutive", "rationale": "Vrai. Les activités EDM sont la responsabilité de la plus haute direction de l'entreprise.", "is_correct": true},
+                        {"text": "Les auditeurs internes", "rationale": "Les auditeurs internes évaluent les contrôles, mais ne dirigent pas la gouvernance.", "is_correct": false}
+                    ],
+                    "hint": "Pensez au niveau le plus élevé de l'organisation."
+                },
+                // Question 38: Importance de la Communication
+                {
+                    "question": "Pourquoi une communication claire et régulière est-elle essentielle pour l'implémentation et le succès de la gouvernance des TI ?",
+                    "answer_options": [
+                        {"text": "Elle permet de masquer les problèmes de performance des TI.", "rationale": "Faux. La transparence est un objectif clé.", "is_correct": false},
+                        {"text": "Elle assure que les parties prenantes sont informées, engagées et comprennent les objectifs et les résultats des TI.", "rationale": "Vrai. La communication est un facilitateur clé (Culture, Éthique et Comportement et Information) et un aspect des processus EDM05 et APO08.", "is_correct": true},
+                        {"text": "Elle réduit la nécessité de documentation formelle.", "rationale": "Faux. La documentation reste importante.", "is_correct": false},
+                        {"text": "Elle est uniquement requise lors des audits externes.", "rationale": "Faux. C'est un processus continu.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à la relation avec les parties prenantes et la transparence."
+                },
+                // Question 39: Facteurs Critiques de Succès (CSF)
+                {
+                    "question": "Dans COBIT 5, les Facteurs Critiques de Succès (CSF) sont :",
+                    "answer_options": [
+                        {"text": "Les mesures de performance des processus TI.", "rationale": "Ceci est le rôle des KPI.", "is_correct": false},
+                        {"text": "Les éléments clés qui doivent être mis en œuvre pour qu'un processus ou un objectif soit atteint avec succès.", "rationale": "Vrai. Les CSF sont des conditions nécessaires pour la réussite.", "is_correct": true},
+                        {"text": "Les risques majeurs identifiés dans la gestion des TI.", "rationale": "Ceci est le rôle des risques.", "is_correct": false},
+                        {"text": "Les objectifs stratégiques de l'entreprise.", "rationale": "Ceci est le rôle des objectifs d'entreprise.", "is_correct": false}
+                    ],
+                    "hint": "Pensez aux conditions indispensables pour 'réussir'."
+                },
+                // Question 40: Baselines et Cibles
+                {
+                    "question": "L'évaluation de la performance dans COBIT 5 implique la définition de 'baselines' et de 'cibles'. Que représentent-elles ?",
+                    "answer_options": [
+                        {"text": "Les 'baselines' sont les objectifs futurs, et les 'cibles' sont les performances actuelles.", "rationale": "Faux. C'est l'inverse.", "is_correct": false},
+                        {"text": "Les 'baselines' sont les points de référence actuels (performances initiales), et les 'cibles' sont les objectifs de performance futurs à atteindre.", "rationale": "Vrai. Les baselines permettent de mesurer le point de départ, les cibles le point d'arrivée souhaité.", "is_correct": true},
+                        {"text": "Les 'baselines' sont les exigences légales, et les 'cibles' sont les exigences internes.", "rationale": "Faux. Elles sont liées à la performance.", "is_correct": false},
+                        {"text": "Elles sont des termes interchangeables pour les indicateurs de performance.", "rationale": "Faux. Elles ont des significations distinctes pour la mesure des progrès.", "is_correct": false}
+                    ],
+                    "hint": "Pensez à un point de 'départ' et un point d''arrivée' pour la mesure."
+                }
+            ]
+        };
+
+
+        // Fonction pour afficher une question spécifique
+        function displayQuestion(index) {
+            if (index >= 0 && index < questions.length) {
+                const question = questions[index];
+                const questionHtml = `
+                    <div class="question-card" id="question-card-${index}">
+                        <h5>${index + 1}. ${question.question}</h5>
+                        <div class="options-container">
+                            ${question.answer_options.map((option, optionIndex) => `
+                                <div class="form-check answer-option" data-is-correct="${option.is_correct}">
+                                    <input class="form-check-input" type="radio" name="currentQuestion" id="question${index}-option${optionIndex}" value="${optionIndex}" ${userAnswers[index] !== null && userAnswers[index].selectedOptionIndex === optionIndex ? 'checked' : ''} ${userAnswers[index] !== null ? 'disabled' : ''}>
+                                    <label class="form-check-label" for="question${index}-option${optionIndex}">
+                                        ${option.text}
+                                    </label>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button class="btn btn-info btn-sm btn-toggle-info mt-3" data-target="hint-${index}">
+                            <i class="fas fa-lightbulb me-2"></i> Afficher l'indice
+                        </button>
+                        <div id="hint-${index}" class="hint">
+                            <strong>Indice :</strong> ${question.hint}
+                        </div>
+                        <button class="btn btn-secondary btn-sm ms-2 btn-toggle-info mt-3" data-target="rationale-${index}">
+                            <i class="fas fa-info-circle me-2"></i> Afficher l'explication
+                        </button>
+                        <div id="rationale-${index}" class="rationale">
+                            <strong>Explication détaillée :</strong>
+                            <ul>
+                                ${question.answer_options.map(option => `
+                                    <li>
+                                        <strong>${option.text} :</strong> ${option.rationale} ${option.is_correct ? '<i class="fas fa-check-circle text-success ms-2"></i>' : '<i class="fas fa-times-circle text-danger ms-2"></i>'}
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                quizDisplayDiv.innerHTML = questionHtml; // Replace content with current question
+                updateNavigationButtons();
+                addCurrentQuestionEventListeners(); // Add listeners for the newly rendered question
+
+                // If question was already answered, show feedback and rationale
+                if (userAnswers[index] !== null) {
+                    applyFeedback(index, userAnswers[index].selectedOptionIndex, userAnswers[index].isCorrect);
+                    const rationaleDiv = document.getElementById(`rationale-${index}`);
+                    if (rationaleDiv) rationaleDiv.classList.add('show-info');
+                    // Update rationale button text
+                    const rationaleBtn = quizDisplayDiv.querySelector('button[data-target^="rationale-"]');
+                    if (rationaleBtn) rationaleBtn.innerHTML = rationaleBtn.innerHTML.replace('Afficher', 'Masquer');
+                }
+            }
+        }
+
+        // Function to update navigation button states, score display, and progress bar
+      function updateNavigationButtons() {
+    prevBtn.disabled = currentQuestionIndex === 0;
+    nextBtn.disabled = userAnswers[currentQuestionIndex] === null;
+
+    if (currentQuestionIndex === questions.length - 1) {
+        nextBtn.textContent = 'Voir le résultat';
+    } else {
+        nextBtn.textContent = 'Suivant';
+    }
+
+    const answeredCount = userAnswers.filter(answer => answer !== null).length;
+    currentScoreDisplay.textContent = `Score: ${score} / ${answeredCount}`;
+    questionCountDisplay.textContent = `Question: ${currentQuestionIndex + 1} / ${questions.length}`;
+
+    const progressPercentage = ((currentQuestionIndex + 1) / questions.length) * 100;
+    questionProgressBar.style.width = `${progressPercentage}%`;
+    questionProgressBar.setAttribute('aria-valuenow', progressPercentage);
+}
+
+
+        // Function to apply visual feedback to options
+        function applyFeedback(questionIndex, selectedOptionIndex, isCorrect) {
+            const optionsContainer = quizDisplayDiv.querySelector('.options-container');
+            if (!optionsContainer) return;
+
+            optionsContainer.querySelectorAll('.answer-option').forEach((optionElement, idx) => {
+                optionElement.classList.remove('correct', 'incorrect'); // Clear previous feedback
+
+                // Highlight correct answer
+                if (questions[questionIndex].answer_options[idx].is_correct) {
+                    optionElement.classList.add('correct');
+                }
+                // Highlight selected incorrect answer
+                if (idx === selectedOptionIndex && !isCorrect) {
+                    optionElement.classList.add('incorrect');
+                }
+            });
+        }
+
+        // Function to add event listeners for the currently displayed question
+        function addCurrentQuestionEventListeners() {
+            const currentQuestionCard = document.getElementById(`question-card-${currentQuestionIndex}`);
+            const optionsContainer = currentQuestionCard.querySelector('.options-container');
+
+            // Event listener for selecting an answer option (this acts as submission)
+            optionsContainer.addEventListener('change', function(event) {
+                if (event.target.type === 'radio') {
+                    const selectedOption = event.target;
+                    const selectedOptionIndex = parseInt(selectedOption.value);
+                    const isCorrect = questions[currentQuestionIndex].answer_options[selectedOptionIndex].is_correct;
+                    
+                    // If not already answered, update score and userAnswers
+                    if (userAnswers[currentQuestionIndex] === null) {
+                        if (isCorrect) {
+                            score++;
+                        }
+                        userAnswers[currentQuestionIndex] = {
+                            selectedOptionIndex: selectedOptionIndex,
+                            isCorrect: isCorrect
+                        };
+                    }
+
+                    // Disable all radio buttons for the current question
+                    optionsContainer.querySelectorAll('input[type="radio"]').forEach(radio => {
+                        radio.disabled = true;
+                    });
+
+                    applyFeedback(currentQuestionIndex, selectedOptionIndex, isCorrect);
+
+                    // Show rationale
+                    const rationaleDiv = document.getElementById(`rationale-${currentQuestionIndex}`);
+                    if (rationaleDiv) rationaleDiv.classList.add('show-info');
+                    
+                    // Update rationale button text
+                    const rationaleBtn = quizDisplayDiv.querySelector('button[data-target^="rationale-"]');
+                    if (rationaleBtn) rationaleBtn.innerHTML = rationaleBtn.innerHTML.replace('Afficher', 'Masquer');
+
+                    updateNavigationButtons(); // Update score and enable next button
+                }
+            });
+
+            // Event listeners for hint and rationale buttons
+            document.querySelectorAll('.btn-toggle-info').forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetId = this.dataset.target;
+                    const targetElement = document.getElementById(targetId);
+                    targetElement.classList.toggle('show-info');
+                    
+                    // Changer le texte du bouton
+                    if (targetElement.classList.contains('show-info')) {
+                        this.innerHTML = this.innerHTML.replace('Afficher', 'Masquer');
+                    } else {
+                        this.innerHTML = this.innerHTML.replace('Masquer', 'Afficher');
+                    }
+                });
+            });
+        }
+
+        // Navigation functions
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion(currentQuestionIndex);
+            } else {
+                // End of quiz, show results modal
+                displayResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion(currentQuestionIndex);
+            }
+        }
+
+        // Function to display quiz results in a modal
+      function displayResults() {
+    quizNavigationDiv.style.display = 'none'; // Hide navigation buttons
+
+    const percentage = (score / questions.length) * 100;
+    let recommendationsHtml = '';
+    let scoreColor = '';
+
+    if (percentage >= 80) {
+        scoreColor = '#28a745'; // Green
+        recommendationsHtml = `
+            <h4>Félicitations !</h4>
+            <p>Votre score de ${percentage.toFixed(2)}% est excellent.</p>
+            <ul>
+                <li>Continuez à réviser pour maintenir votre niveau.</li>
+            </ul>
+        `;
+    } else if (percentage >= 60) {
+        scoreColor = '#ffc107'; // Yellow
+        recommendationsHtml = `
+            <h4>Bien joué !</h4>
+            <p>Votre score de ${percentage.toFixed(2)}% est correct, mais peut être amélioré.</p>
+            <ul>
+                <li>Revoyez les concepts que vous maîtrisez moins bien.</li>
+            </ul>
+        `;
+    } else if (percentage >= 40) {
+        scoreColor = '#fd7e14'; // Orange
+        recommendationsHtml = `
+            <h4>Vous n'avez pas réussi.</h4>
+            <p>Votre score de ${percentage.toFixed(2)}% indique que des efforts supplémentaires sont nécessaires.</p>
+            <ul>
+                <li>Revoyez attentivement les principes et les facilitateurs.</li>
+            </ul>
+        `;
+    } else {
+        scoreColor = '#dc3545'; // Red
+        recommendationsHtml = `
+            <h4>Résultat insuffisant.</h4>
+            <p>Votre score de ${percentage.toFixed(2)}% est très faible.</p>
+            <ul>
+                <li>Reprenez les bases et avancez pas à pas.</li>
+            </ul>
+        `;
+    }
+
+    finalScoreCorrectSpan.textContent = score;
+    finalScoreTotalSpan.textContent = questions.length;
+    finalScorePercentage.textContent = `${percentage.toFixed(2)}%`;
+    finalScorePercentage.style.color = scoreColor;
+    finalRecommendationsDiv.innerHTML = recommendationsHtml;
+
+    resultsModal.show();
+}
+
+
+        // Function to restart the quiz
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = new Array(questions.length).fill(null); // Reset user answers
+            quizNavigationDiv.style.display = 'flex'; // Show navigation buttons
+            resultsModal.hide(); // Hide the modal
+            displayQuestion(currentQuestionIndex); // Start from the first question
+        }
+
+        // Attach navigation button handlers
+        nextBtn.addEventListener('click', nextQuestion);
+        prevBtn.addEventListener('click', previousQuestion);
+        restartQuizBtnModal.addEventListener('click', restartQuiz); // Attach restart to modal button
+
+        // Initial load of the quiz
+        document.addEventListener('DOMContentLoaded', () => {
+            // Hide spinner
+            loadingSpinner.style.display = 'none'; 
+            questions = quizData.questions; // Assign loaded data
+            displayQuestion(currentQuestionIndex); // Display the first question
+        });

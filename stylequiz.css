@@ -1,0 +1,262 @@
+
+        /* Styles CSS personnalisés pour le quiz COBIT 5 */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e8f0f7; /* Un fond bleu clair doux */
+            color: #2c3e50; /* Couleur de texte principale */
+            padding-top: 30px;
+            padding-bottom: 30px;
+        }
+        .quiz-container {
+            max-width: 950px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.18); /* Ombre plus prononcée et élégante */
+            animation: fadeIn 1s ease-out; /* Animation d'apparition */
+        }
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #3498db; /* Bleu secondaire de Bootstrap */
+            font-weight: 700;
+            font-size: 2.8rem;
+            position: relative;
+            padding-bottom: 18px;
+        }
+        .quiz-header::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 5px;
+            background-color: #2c3e50; /* Couleur primaire */
+            border-radius: 3px;
+        }
+
+        .score-progress-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding: 15px 25px;
+            background-color: #f0f8ff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .progress {
+            height: 15px;
+            border-radius: 10px;
+            background-color: #e9ecef;
+            flex-grow: 1;
+            margin-left: 20px;
+        }
+        .progress-bar {
+            background-color: #3498db;
+            border-radius: 10px;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .question-card {
+            margin-bottom: 35px;
+            border: none; /* Supprimer la bordure par défaut */
+            border-radius: 12px;
+            padding: 30px;
+            background-color: #fefefe;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1); /* Ombre légère pour chaque carte */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .question-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .question-card h5 {
+            margin-bottom: 25px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 1.4rem;
+            line-height: 1.5;
+        }
+        .answer-option {
+            margin-bottom: 15px;
+            padding: 15px 20px;
+            border: 1px solid #d0d9e2;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            background-color: #f8fbfd;
+        }
+        .answer-option:hover {
+            background-color: #eef7ff; /* Bleu très clair au survol */
+            border-color: #9ac7ed;
+        }
+        .answer-option input[type="radio"] {
+            margin-right: 18px;
+            transform: scale(1.3); /* Agrandir les radios boutons */
+            cursor: pointer;
+        }
+        .answer-option label {
+            cursor: pointer;
+            flex-grow: 1; /* Permet au label de prendre l'espace restant */
+        }
+
+        /* Styles pour les retours (correct/incorrect) en mode apprentissage */
+        .answer-option.correct {
+            background-color: #d4edda; /* Vert clair */
+            border-color: #28a745; /* Vert foncé */
+            font-weight: bold;
+            color: #155724;
+            animation: pulseGreen 0.5s ease-out;
+        }
+        .answer-option.incorrect {
+            background-color: #f8d7da; /* Rouge clair */
+            border-color: #dc3545; /* Rouge foncé */
+            font-weight: bold;
+            color: #721c24;
+            animation: shakeRed 0.5s ease-out;
+        }
+        .rationale {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #e9eff5; /* Gris bleu clair */
+            border-left: 6px solid #607d8b; /* Gris ardoise */
+            border-radius: 8px;
+            font-size: 1em;
+            color: #455a64;
+            display: none; /* Masqué par défaut */
+            animation: slideInUp 0.4s ease-out;
+        }
+        .rationale ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+        .rationale li {
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        .rationale li:last-child {
+            margin-bottom: 0;
+        }
+
+        .hint {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff8e1; /* Jaune très clair */
+            border-left: 6px solid #ffb300; /* Jaune orangé */
+            border-radius: 8px;
+            font-size: 0.95em;
+            color: #a1887f;
+            display: none; /* Masqué par défaut */
+            animation: slideInUp 0.4s ease-out;
+        }
+        .show-info {
+            display: block;
+        }
+        .btn-toggle-info {
+            margin-top: 20px;
+            font-size: 0.95em;
+            padding: 10px 20px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .btn-toggle-info:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Styles pour le pop-up de résultats (modal) */
+        .results-modal .modal-content {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 20px;
+            text-align: center;
+        }
+        .results-modal .modal-header {
+            border-bottom: none;
+            padding-bottom: 0;
+            justify-content: center;
+        }
+        .results-modal .modal-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .results-modal .modal-body {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        .results-modal .score-text {
+            font-size: 1.8rem;
+            color: #495057;
+            margin-bottom: 15px;
+        }
+        .results-modal .score-percentage {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        .results-modal .recommendations {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #e9eff5;
+            border-radius: 10px;
+            border-left: 6px solid #3498db;
+            text-align: left;
+        }
+        .results-modal .recommendations h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        .results-modal .recommendations ul {
+            list-style-type: disc;
+            padding-left: 25px;
+        }
+        .results-modal .recommendations li {
+            margin-bottom: 8px;
+            color: #495057;
+        }
+        .results-modal .modal-footer {
+            border-top: none;
+            padding-top: 0;
+            justify-content: center;
+        }
+        .results-modal #restart-quiz-btn-modal {
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+        }
+
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulseGreen {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.005); }
+            100% { transform: scale(1); }
+        }
+        @keyframes shakeRed {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
